@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مراجعة Advanced Operating Systems (CSC 312)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#eef2f6;--surface:#ffffff;--surface2:#f5f8fa;--ink:#0f2230;--muted:#586a77;--line:#d6dee6;
+  --teal:#0f766e;--teal-d:#0b5a54;--teal-soft:#dcf1ee;
+  --good:#15803d;--good-soft:#dcfce7;--bad:#b91c1c;--bad-soft:#fee2e2;--amber:#b45309;--amber-soft:#fef3c7;
+  --blue:#1d4ed8;--blue-soft:#dbeafe;--shadow:0 1px 2px rgba(15,34,48,.06);
+  --hero1:#08232e;--hero2:#0d5754;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1620;--surface:#122230;--surface2:#16293a;--ink:#e6eef5;--muted:#9bb0c0;--line:#244052;
+    --teal:#2dd4bf;--teal-d:#5eead4;--teal-soft:#10413f;
+    --good:#4ade80;--good-soft:#12361f;--bad:#f87171;--bad-soft:#3b1717;--amber:#fbbf24;--amber-soft:#3a2d0d;
+    --blue:#93c5fd;--blue-soft:#172b4d;--shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1620;--surface:#122230;--surface2:#16293a;--ink:#e6eef5;--muted:#9bb0c0;--line:#244052;
+  --teal:#2dd4bf;--teal-d:#5eead4;--teal-soft:#10413f;
+  --good:#4ade80;--good-soft:#12361f;--bad:#f87171;--bad-soft:#3b1717;--amber:#fbbf24;--amber-soft:#3a2d0d;
+  --blue:#93c5fd;--blue-soft:#172b4d;--shadow:none;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px);height:auto}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif;line-height:1.75;font-size:16px;-webkit-text-size-adjust:100%}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.ltr{direction:ltr;unicode-bidi:isolate;text-align:left}
+.en{direction:ltr;unicode-bidi:isolate;display:inline-block}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;color:#eaf6f5;background:linear-gradient(135deg,var(--hero1),var(--hero2));padding:34px 20px 70px}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,#000 30%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,#000 30%,transparent 100%)}
+.hero-in{position:relative;max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:28px;justify-content:space-between;flex-wrap:wrap}
+.hero-text{flex:1 1 420px;min-width:0}
+.hero h1{margin:0 0 6px;font-size:clamp(28px,5vw,46px);line-height:1.25;font-weight:700;letter-spacing:0}
+.hero h1 .en{color:#7ee8da}
+.hero p.sub{margin:0 0 20px;font-size:clamp(15px,2.2vw,18px);color:#bfe3df;max-width:46ch}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:8px 14px;font-size:14px;color:#e2f4f2}
+.stat b{font-size:20px;color:#fff;margin-inline-end:6px}
+.hero-art{flex:0 0 auto;width:min(250px,60vw)}
+.hero-art svg{width:100%;height:auto;display:block}
+.ring{opacity:.9;animation:ringglow 1.4s ease-out both}
+.r1{animation-delay:.1s}.r2{animation-delay:.45s}.r3{animation-delay:.8s}.r4{animation-delay:1.15s}
+@keyframes ringglow{0%{opacity:.15}50%{opacity:1;filter:brightness(1.5)}100%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){.ring{animation:none}}
+
+/* ---------- layout ---------- */
+main{max-width:1080px;margin:-42px auto 0;padding:0 16px 40px;position:relative}
+.lec-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.lec-tab{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center;box-shadow:var(--shadow);transition:border-color .15s,background .15s}
+.lec-tab b{display:block;font-size:17px}
+.lec-tab small{display:block;color:var(--muted);font-size:12.5px;line-height:1.4;direction:ltr}
+.lec-tab[aria-selected="true"]{border-color:var(--teal);background:var(--teal-soft)}
+.sub-tabs{display:flex;gap:6px;margin:18px 0 0;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.sub-tab{background:none;border:0;border-bottom:3px solid transparent;padding:10px 16px;font-weight:600;color:var(--muted);white-space:nowrap;margin-bottom:-1px}
+.sub-tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--teal)}
+.panel{padding-top:20px}
+.panel[hidden],.lec[hidden]{display:none}
+
+/* ---------- concepts ---------- */
+.keys{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:22px}
+.keys h2{margin:0 0 6px;font-size:18px}
+.keys ul{margin:0;padding-inline-start:20px}
+.keys li{margin:3px 0}
+.concept{margin:0 0 30px}
+.concept>h3{font-size:20px;margin:0 0 6px;display:flex;align-items:center;gap:10px}
+.concept>h3::before{content:"";width:6px;height:22px;border-radius:3px;background:var(--teal);flex:none}
+.concept>p{margin:0 0 12px;color:var(--ink);max-width:78ch}
+.w{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.note{margin:12px 0 0;padding:10px 12px;background:var(--surface2);border-radius:10px;font-size:15px;min-height:46px}
+.btn{background:var(--teal);color:#fff;border:0;border-radius:10px;padding:8px 14px;font-weight:600}
+[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#06201e}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.warn{background:var(--bad);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:12px;flex-wrap:wrap}
+.seg button{background:none;border:0;padding:7px 14px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--teal);color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;direction:ltr}
+.chip{border:1.5px solid var(--line);background:var(--surface2);border-radius:999px;padding:5px 13px;font-size:14px;font-weight:500}
+.chip.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.tag{display:inline-block;font-size:12.5px;border-radius:6px;padding:1px 8px;font-weight:600;margin-inline-end:6px}
+.tag.g{background:var(--good-soft);color:var(--good)}.tag.b{background:var(--blue-soft);color:var(--blue)}.tag.a{background:var(--amber-soft);color:var(--amber)}.tag.r{background:var(--bad-soft);color:var(--bad)}
+
+/* layers */
+.layers{display:flex;flex-direction:column;gap:8px;max-width:420px;margin-inline:auto;direction:ltr}
+.layer{border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--surface2);font-weight:600;transition:all .2s}
+.layer:nth-child(1){margin-inline:0}.layer:nth-child(2){margin-inline:14px}.layer:nth-child(3){margin-inline:28px}.layer:nth-child(4){margin-inline:42px}
+.layer.on{background:var(--teal);color:#fff;border-color:var(--teal);transform:scale(1.03)}
+.layer.sel{border-color:var(--teal)}
+
+/* stepper */
+.steps{display:flex;gap:6px;margin-bottom:12px;direction:ltr}
+.steps button{flex:1;height:8px;border-radius:4px;border:0;background:var(--line);padding:0}
+.steps button.done{background:var(--teal)}
+.steps button.cur{background:var(--amber)}
+.stitle{font-weight:700;font-size:17px;direction:ltr;text-align:left;margin-bottom:4px}
+.chipsrow{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;direction:ltr}
+.state{border-radius:10px;padding:6px 12px;font-size:14px;font-weight:600;border:1.5px solid var(--line);background:var(--surface2)}
+.state.run{background:var(--good-soft);color:var(--good);border-color:var(--good)}
+.state.idle{color:var(--muted)}
+.state.busy{background:var(--amber-soft);color:var(--amber);border-color:var(--amber)}
+.state.bad{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+
+/* lanes */
+.lane{display:flex;align-items:center;gap:10px;margin:8px 0;direction:ltr}
+.ln{flex:0 0 96px;font-size:13px;color:var(--muted);text-align:right}
+.bar{flex:1;display:flex;height:40px;border-radius:10px;overflow:hidden;border:1px solid var(--line);min-width:0}
+.bar div{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;overflow:hidden;white-space:nowrap;padding:0 4px;border-inline-end:1px solid rgba(255,255,255,.4)}
+.sg-work{background:var(--teal);color:#fff}.sg-work2{background:#0891b2;color:#fff}.sg-wait{background:repeating-linear-gradient(45deg,var(--amber-soft),var(--amber-soft) 6px,var(--surface) 6px,var(--surface) 12px);color:var(--amber)}
+.sg-io{background:var(--blue);color:#fff}.sg-idle{background:var(--surface2);color:var(--muted)}
+.sg-t1{background:#0f766e;color:#fff}.sg-t2{background:#2563eb;color:#fff}.sg-t3{background:#9333ea;color:#fff}.sg-t4{background:#d97706;color:#fff}.sg-none{background:var(--surface2);color:var(--muted)}
+
+/* svg widgets */
+.svgbox{width:100%;max-width:640px;margin:0 auto;display:block}
+.svgbox text{font-family:inherit;fill:var(--ink)}
+.box{fill:var(--surface2);stroke:var(--ink);stroke-width:1.5}
+input[type=range]{width:100%;accent-color:var(--teal)}
+.big{font-size:28px;font-weight:700}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;direction:ltr}
+.cmp>div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface2)}
+.cmp .meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:6px}
+.cmp .meter i{display:block;height:100%;border-radius:5px;transition:width .3s}
+
+/* hierarchy */
+.hwrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+.pyr{display:flex;flex-direction:column;gap:6px;align-items:center;direction:ltr}
+.lv{border:1.5px solid var(--line);background:var(--surface2);border-radius:10px;padding:7px 6px;font-size:14px;font-weight:600;transition:all .15s}
+.lv.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.meters{display:grid;gap:6px;margin-top:8px;direction:ltr}
+.meters div{display:flex;align-items:center;gap:8px;font-size:13px}
+.meters span{flex:0 0 70px;color:var(--muted)}
+.meters i{display:block;height:8px;border-radius:4px;background:var(--teal)}
+@media (max-width:640px){.hwrap{grid-template-columns:1fr}.lec-tabs{gap:8px}.lec-tab{padding:10px 4px}.lec-tab b{font-size:15px}.lec-tab small{font-size:11px}.cmp{grid-template-columns:1fr}.ln{flex-basis:70px;font-size:12px}}
+
+/* disk */
+.diskwrap{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center}
+.diskwrap svg{width:min(260px,100%);height:auto}
+.dseg{fill:var(--teal-soft);stroke:var(--teal);stroke-width:1;cursor:pointer;transition:fill .15s}
+.dseg:hover{fill:#99e0d8}.dseg.on{fill:var(--amber);stroke:var(--amber)}
+
+/* dual mode */
+.modebox{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px;direction:ltr}
+.modebadge{border-radius:12px;padding:10px 16px;font-weight:700;font-size:17px;transition:all .25s;min-width:190px;text-align:center}
+.modebadge.u{background:var(--good-soft);color:var(--good)}.modebadge.k{background:var(--amber-soft);color:var(--amber)}
+.log{list-style:none;margin:10px 0 0;padding:0;max-height:180px;overflow:auto;font-size:14.5px}
+.log li{padding:5px 10px;border-radius:8px;margin-bottom:4px;background:var(--surface2)}
+.log li.bad{background:var(--bad-soft);color:var(--bad)}.log li.ok{background:var(--good-soft);color:var(--good)}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+
+/* base-limit */
+.track{position:relative;height:36px;background:var(--surface2);border:1px solid var(--line);border-radius:8px;margin:14px 0 8px;direction:ltr}
+.track .rng{position:absolute;top:0;bottom:0;background:var(--teal-soft);border-inline:3px solid var(--teal)}
+.track .mk{position:absolute;top:-8px;width:4px;bottom:-8px;background:var(--amber);border-radius:2px;transition:left .2s}
+.numin{font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;width:170px;background:var(--surface);color:var(--ink);direction:ltr}
+
+/* structure */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;direction:ltr}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+.os{border:1.5px solid var(--line);border-radius:12px;padding:10px;background:var(--surface2)}
+.os h4{margin:0 0 8px;font-size:14.5px}
+.blk{border-radius:8px;padding:6px 8px;margin:5px 0;font-size:13.5px;font-weight:600;background:var(--blue-soft);color:var(--blue);border:1.5px solid transparent;transition:all .3s}
+.blk.k{background:#ccd6e0;color:#0f2230}
+[data-theme="dark"] .blk.k,:root:not([data-theme="light"]) .blk.k{background:#2a4256;color:#e6eef5}
+.blk.dead{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.blk.fix{background:var(--good-soft);color:var(--good);border-color:var(--good)}
+.kernel{border:2px dashed var(--ink);border-radius:10px;padding:6px 10px;margin:6px 0}
+.kernel>small,.userspace>small{color:var(--muted);font-size:12px}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:12px}
+.tbl th,.tbl td{border:1px solid var(--line);padding:7px 10px;text-align:start;vertical-align:top}
+.tbl th{background:var(--teal-soft);color:var(--ink)}
+.scroll{overflow-x:auto}
+
+/* process memory */
+.mem{display:flex;flex-direction:column;max-width:320px;margin-inline:auto;border:2px solid var(--ink);border-radius:10px;overflow:hidden;direction:ltr}
+.seg-m{border:0;border-bottom:1.5px solid var(--ink);padding:8px;text-align:center;font-weight:600;min-height:54px;display:flex;flex-direction:column;gap:4px;justify-content:center;align-items:stretch}
+.seg-m:last-child{border-bottom:0}
+.seg-m.on{outline:3px solid var(--amber);outline-offset:-3px}
+.m-stack{background:var(--teal-soft)}.m-free{background:var(--surface);cursor:default;color:var(--muted);font-weight:500;min-height:40px}.m-heap{background:var(--blue-soft)}.m-data{background:var(--amber-soft)}.m-text{background:var(--bad-soft)}
+.fr{background:var(--teal);color:#fff;border-radius:6px;font-size:12px;padding:1px 6px}.hp{background:var(--blue);color:#fff;border-radius:6px;font-size:12px;padding:1px 6px}
+[data-theme="dark"] .fr,[data-theme="dark"] .hp,:root:not([data-theme="light"]) .fr,:root:not([data-theme="light"]) .hp{color:#06201e}
+
+/* states */
+.sv{width:100%;max-width:560px;margin:0 auto;display:block}
+.sv ellipse{fill:var(--surface2);stroke:var(--ink);stroke-width:1.5;transition:fill .2s}
+.sv ellipse.cur{fill:var(--teal);stroke:var(--teal)}
+.sv text{font-family:inherit;fill:var(--ink);font-size:14px;text-anchor:middle;font-weight:600}
+.sv text.cur{fill:#fff}
+.sv path{fill:none;stroke:var(--muted);stroke-width:1.6}
+.sv path.hot{stroke:var(--amber);stroke-width:3}
+
+/* threads */
+.tabs3{display:flex;gap:6px;margin:8px 0;direction:ltr}
+.tabs3 div{flex:1;border-radius:8px;padding:8px 4px;text-align:center;font-size:13px;font-weight:600;background:var(--good-soft);color:var(--good);border:1.5px solid var(--good);transition:all .3s}
+.tabs3 div.dead{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.sharedrow{border-radius:8px;background:var(--blue-soft);color:var(--blue);text-align:center;padding:6px;font-size:13px;font-weight:600;margin-bottom:6px;direction:ltr}
+
+/* models */
+.mdl{width:100%;max-width:560px;margin:0 auto;display:block}
+.mdl text{font-family:inherit;font-size:13px;text-anchor:middle;fill:var(--ink);font-weight:600}
+.mdl .ut circle,.mdl .kt rect{fill:var(--teal-soft);stroke:var(--teal);stroke-width:2}
+.mdl .ut.bl circle,.mdl .kt.bl rect{fill:var(--bad-soft);stroke:var(--bad)}
+.mdl line{stroke:var(--muted);stroke-width:1.8}
+.mdl line.bl{stroke:var(--bad);stroke-width:2.5}
+
+/* ipc */
+.ipc{display:grid;grid-template-columns:1fr 1fr;gap:12px;direction:ltr}
+@media (max-width:640px){.ipc{grid-template-columns:1fr}}
+.ipc>div{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface2);text-align:center;font-size:14px}
+.ipc .pp{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.ipc .pp span{background:var(--teal-soft);border:1.5px solid var(--teal);border-radius:8px;padding:4px 12px;font-weight:600}
+.ipc .mid{border:2px dashed var(--amber);background:var(--amber-soft);border-radius:8px;padding:5px;font-weight:600;color:var(--amber)}
+
+/* rt sorter */
+.rtc{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-bottom:1px dashed var(--line)}
+.rtc:last-child{border-bottom:0}
+.rtc .t{flex:1 1 220px;font-weight:600;direction:ltr;text-align:left}
+.rtc .fb{flex:1 1 100%;font-size:14.5px}
+
+/* ---------- quiz ---------- */
+.scorebar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.scorebar .prog{flex:1 1 140px;height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.scorebar .prog i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.scorebar label{display:inline-flex;gap:6px;align-items:center;font-size:14px;cursor:pointer}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.q.hard{border-color:var(--amber)}
+.qh{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.qn{font-weight:700;color:var(--teal-d)}
+.qt{font-size:17px;font-weight:600;line-height:1.55;margin:0 0 12px;direction:ltr;text-align:left}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;direction:ltr;background:var(--surface2);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;line-height:1.5}
+.opt:hover:not(:disabled){border-color:var(--teal)}
+.opt b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--line);display:grid;place-items:center;font-size:13px}
+.opt.right{background:var(--good-soft);border-color:var(--good)}.opt.right b{background:var(--good);color:#fff}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}.opt.wrong b{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.exp{margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--surface2);border-inline-start:4px solid var(--teal)}
+.exp.ok{border-color:var(--good)}.exp.no{border-color:var(--bad)}
+.exp strong{display:block;margin-bottom:2px}
+.final{font-weight:700}
+
+/* essays */
+.essay{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.essay.hard{border-color:var(--amber)}
+.essay .qt{margin-bottom:10px}
+.model{margin-top:12px;padding:12px 16px;background:var(--surface2);border-radius:10px;border-inline-start:4px solid var(--teal)}
+.model ul,.model ol{margin:6px 0;padding-inline-start:22px}
+.model li{margin:3px 0}
+.model h5{margin:0 0 4px;font-size:15px}
+
+footer{margin-top:20px;padding:26px 16px calc(26px + env(safe-area-inset-bottom,0px));text-align:center;color:#cfe8e5;background:linear-gradient(135deg,var(--hero1),var(--hero2))}
+footer b{display:block;font-size:20px;color:#fff;direction:ltr;letter-spacing:.2px}
+footer span{font-size:14px;direction:ltr;display:block;opacity:.85}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-in">
+    <div class="hero-text">
+      <h1>مراجعة <span class="en">Advanced Operating Systems</span> <span class="en">(CSC 312)</span></h1>
+      <p class="sub">شرح مبسّط للمفاهيم بتجارب تفاعلية، وبنك أسئلة بتوضيح لكل إجابة، وأسئلة مقالية بإجابات نموذجية.</p>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 260 260" role="img">
+        <circle class="ring r1" cx="130" cy="130" r="124" fill="#14424a" stroke="#7ee8da" stroke-width="2"/>
+        <circle class="ring r2" cx="130" cy="130" r="94" fill="#0f5c58" stroke="#7ee8da" stroke-width="2"/>
+        <circle class="ring r3" cx="130" cy="130" r="64" fill="#1b857b" stroke="#bff5ee" stroke-width="2"/>
+        <circle class="ring r4" cx="130" cy="130" r="34" fill="#f5b83d" stroke="#fff3cf" stroke-width="2"/>
+        <g font-family="IBM Plex Sans Arabic, sans-serif" font-size="12" font-weight="600" text-anchor="middle" fill="#eafaf8">
+          <text x="130" y="24">User</text>
+          <text x="130" y="56">Applications</text>
+          <text x="130" y="86">Kernel</text>
+          <text x="130" y="134" fill="#3b2a00">CPU</text>
+          <text x="130" y="148" fill="#3b2a00" font-size="10">RAM · I/O</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<main>
+  <nav class="lec-tabs" role="tablist" aria-label="المحاضرات" id="lecTabs"></nav>
+  <div class="sub-tabs" role="tablist" id="subTabs"></div>
+  <div id="stage"></div>
+</main>
+<footer style="text-align:center;padding:16px;margin-top:24px;border-top:1px solid #D3DAE3;color:#586677;font-size:14px">
+   <strong>Dr. Ali A. Ahmed</strong><br>
+  Dept. of Computer Science, Faculty of Science, Minia University
+</footer>
+
+<script>
+'use strict';
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const W={};
+
+/* ===================== CONCEPT PAGES ===================== */
+const CONCEPTS={
+l0:`
+<div class="keys"><h2>أهم النقاط للحفظ</h2><ul>
+<li>الـ <b class="en">OS</b> وسيط بين المستخدم والـ hardware، وبيدير الـ CPU والـ memory والـ I/O.</li>
+<li>الـ <b class="en">Kernel</b> هو البرنامج الوحيد اللي شغال طول الوقت، وهو قلب الـ OS.</li>
+<li>الأنظمة اتطورت: <span class="en">Batch → Multiprogramming → Time-sharing</span>، وكل واحد حلّ مشكلة اللي قبله.</li>
+<li>الـ <b class="en">Interrupt</b> إشارة للـ CPU معناها: «وقّف اللي بتعمله واتعامل مع ده دلوقتي».</li>
+<li>برنامج الـ <b class="en">Bootstrap</b> بيتخزن في ROM لأنه لازم يفضل موجود حتى لو الجهاز اتفصل.</li>
+</ul></div>
+
+<section class="concept"><h3>إيه هو الـ Operating System؟</h3>
+<p>تخيل إن الـ OS هو موظف الاستقبال في فندق: أي حد عايز حاجة بيكلّمه هو، ومحدش بيدخل المطبخ (الـ hardware) بنفسه. اضغط على أي طبقة، وبعدها جرّب زرار «ابعت طلب».</p>
+<div class="w" data-w="layers"></div></section>
+
+<section class="concept"><h3>أنواع أنظمة الكمبيوتر</h3>
+<p>اختار نوع من اللي تحت وشوف فكرته ومثال عليه. حاول تحفظ الكلمة المفتاحية بالإنجليزي لكل نوع.</p>
+<div class="w" data-w="picker" data-set="types"></div></section>
+
+<section class="concept"><h3>الـ Real-Time: Hard ولا Soft؟</h3>
+<p>القاعدة السهلة: اسأل نفسك «لو الـ deadline فات، هل ده كارثة ولا مجرد جودة أقل؟». لو كارثة يبقى <span class="en">Hard</span>. جرّب تصنّف الأمثلة دي.</p>
+<div class="w" data-w="rt"></div></section>
+
+<section class="concept"><h3>رحلة الـ Boot: من الزرار لحد ما النظام يشتغل</h3>
+<p>اضغط «التالي» وتابع إيه اللي بيحصل بالترتيب.</p>
+<div class="w" data-w="stepper" data-set="boot"></div></section>
+
+<section class="concept"><h3>إيه اللي بيحصل لما يحصل Interrupt؟</h3>
+<p>مثال: الـ disk خلّص قراءة ملف وعايز يقول للـ CPU. شوف الخطوات واحدة واحدة، وركّز على إن الـ CPU بيحفظ حالة العملية قبل ما يسيبها.</p>
+<div class="w" data-w="stepper" data-set="interrupt"></div>
+<p style="margin-top:10px"><span class="tag b">Hardware interrupt</span> بييجي من جهاز (زي الـ disk أو الكيبورد). <span class="tag a">Software interrupt / Trap</span> بييجي من البرنامج نفسه: إما <span class="en">error</span> (زي القسمة على صفر) أو <span class="en">system call</span> (طلب خدمة من الـ OS).</p></section>
+`,
+
+l2:`
+<div class="keys"><h2>أهم النقاط للحفظ</h2><ul>
+<li><b class="en">Device controller</b> شريحة hardware، و<b class="en">Device driver</b> برنامج بيكلّمها.</li>
+<li><b class="en">DMA</b> بينقل block كامل بين الجهاز والـ RAM من غير ما يشغل الـ CPU، وبيعمل interrupt واحد بس لكل block.</li>
+<li>كل ما نمشي لتحت في الـ storage hierarchy: السعة بتزيد، السرعة بتقل، والتكلفة لكل byte بتقل.</li>
+<li>الـ <b class="en">mode bit</b> بيفرّق بين user mode و kernel mode، والتعليمات الـ privileged بتشتغل في kernel mode بس.</li>
+<li>الحماية تلات أنواع: <span class="en">I/O</span> و<span class="en">Memory (base &amp; limit)</span> و<span class="en">CPU (timer)</span>.</li>
+</ul></div>
+
+<section class="concept"><h3>Controller و Driver: إيه الفرق؟</h3>
+<p>الـ controller هو «الموظف» الصغير اللي واقف عند كل جهاز. الـ driver هو «المترجم» اللي بيخلّي الـ OS يفهم لغة الـ controller ده.</p>
+<div class="w"><div class="two">
+<div class="os"><h4>Device Controller <span class="tag r">Hardware</span></h4><div class="blk">شريحة صغيرة متركبة على الجهاز</div><div class="blk">بتدير الـ local buffer بتاعها</div><div class="blk">ممكن تتحكم في أكتر من جهاز</div></div>
+<div class="os"><h4>Device Driver <span class="tag g">Software</span></h4><div class="blk">برنامج جوه الـ OS</div><div class="blk">بيعرف يكلّم controller معيّن</div><div class="blk">مترجم بين الـ OS والـ hardware</div></div>
+</div></div></section>
+
+<section class="concept"><h3>Synchronous و Asynchronous I/O</h3>
+<p>بدّل بين النوعين وشوف الفرق في الوقت اللي البرنامج بيضيّعه وهو مستني.</p>
+<div class="w" data-w="io"></div></section>
+
+<section class="concept"><h3>الـ DMA: ليه محتاجينه؟</h3>
+<p>لو الـ CPU اتقاطع عند كل byte في ملف كبير، هيضيّع وقته كله في الـ interrupts. الـ DMA controller بيشيل الشغلانة دي عنه. غيّر حجم الـ block واتفرّج على عدد الـ interrupts.</p>
+<div class="w" data-w="dma"></div></section>
+
+<section class="concept"><h3>هرم التخزين (Storage Hierarchy)</h3>
+<p>اضغط على أي مستوى. لاحظ إن الأسرع هو الأصغر والأغلى. وعلشان كده بنستخدم أكتر من نوع مع بعض.</p>
+<div class="w" data-w="hier"></div></section>
+
+<section class="concept"><h3>شكل الـ Magnetic Disk من جوه</h3>
+<p>السطح بيتقسم لـ <span class="en">tracks</span> (دواير)، وكل track بيتقسم لـ <span class="en">sectors</span> (قطع). اضغط على أي sector.</p>
+<div class="w" data-w="disk"></div></section>
+
+<section class="concept"><h3>أنواع الـ Architecture</h3>
+<p>الجدول ده بيلخّص الفرق بين الأنواع التلاتة.</p>
+<div class="w scroll"><table class="tbl ltr">
+<tr><th>Type</th><th>Idea</th><th>Benefit</th></tr>
+<tr><td><b>Single-processor</b></td><td>One general-purpose CPU runs user processes. Special-purpose processors (disk, keyboard, graphics) handle I/O only.</td><td>Simple</td></tr>
+<tr><td><b>Multiprocessor / Multicore</b></td><td>2+ CPUs or cores share bus, memory and devices under one OS (SMP).</td><td>Throughput, economy of scale, graceful degradation</td></tr>
+<tr><td><b>Clustered</b></td><td>Independent computers (nodes) joined by network or shared storage act as one system.</td><td>High availability, high-performance computing</td></tr>
+</table></div>
+<p style="margin-top:8px"><b class="en">Asymmetric clustering</b>: سيرفر واحد شغال والباقي stand-by. <b class="en">Symmetric clustering</b>: كل الـ hosts شغالة في نفس الوقت.</p></section>
+
+<section class="concept"><h3>الـ Dual-Mode والـ System Calls</h3>
+<p>الـ CPU عنده <span class="en">mode bit</span> علشان الـ OS يحمي نفسه. جرّب التلات أزرار وشوف إيه اللي بيحصل.</p>
+<div class="w" data-w="dual"></div></section>
+
+<section class="concept"><h3>تصميم الـ OS: Monolithic ولا Microkernel؟</h3>
+<p>اضغط «اكسر الـ driver» في الاتنين وقارن النتيجة. ده بالظبط الفرق بين السرعة والأمان.</p>
+<div class="w" data-w="struct"></div>
+<p style="margin-top:12px">وتحت دي ملخص لكل التصاميم:</p>
+<div class="w" data-w="picker" data-set="designs"></div></section>
+
+<section class="concept"><h3>الحماية (Hardware Protection)</h3>
+<p><b class="en">I/O protection</b>: البرنامج ميقدرش يتحكم في الأجهزة مباشرة، لازم يعدّي على الـ OS. وتحت جرّب الاتنين التانيين:</p>
+<div class="w" data-w="bl"></div>
+<div class="w" style="margin-top:12px" data-w="timer"></div></section>
+`,
+
+l3:`
+<div class="keys"><h2>أهم النقاط للحفظ</h2><ul>
+<li><b class="en">Program</b> ملف على الـ disk (passive)، و<b class="en">Process</b> هو البرنامج وهو شغال (active).</li>
+<li>الـ process memory: <span class="en">text, data, heap, stack</span>.</li>
+<li>الـ <b class="en">PCB</b> بيحتفظ بكل معلومات الـ process، والـ <b class="en">context switch</b> بيحفظ ويرجّع الحالة، وهو overhead بحت.</li>
+<li>الـ <b class="en">thread</b> بيشارك الـ memory، لكن له <span class="en">stack, registers, PC</span> خاصين بيه.</li>
+<li>الموديلات: <span class="en">Many-to-One</span> و<span class="en">One-to-One</span> و<span class="en">Many-to-Many</span>.</li>
+</ul></div>
+
+<section class="concept"><h3>الـ Process جوه الـ Memory</h3>
+<p>اضغط «استدعي function» و«اعمل new» وشوف أنهي منطقة بتكبر. واضغط على أي منطقة تعرف فيها إيه.</p>
+<div class="w" data-w="pmem"></div></section>
+
+<section class="concept"><h3>حالات الـ Process (Process States)</h3>
+<p>الـ process بتتنقل بين 5 حالات. دوس على الأزرار المتاحة بس، لأن الحالات التانية مش ممكنة من مكانك الحالي.</p>
+<div class="w" data-w="pstate"></div></section>
+
+<section class="concept"><h3>الـ PCB والـ Context Switch</h3>
+<p>الـ <span class="en">PCB</span> زي «ملف الموظف»: فيه الـ PID والحالة والـ program counter والـ registers ومعلومات الـ memory والـ I/O. والـ context switch هو إن الـ CPU يقفل ملف عملية ويفتح ملف التانية.</p>
+<div class="w" data-w="stepper" data-set="ctx"></div></section>
+
+<section class="concept"><h3>الـ Schedulers والـ IPC</h3>
+<div class="w" data-w="picker" data-set="sched"></div>
+<p style="margin-top:12px">لو في عمليتين بيتعاونوا، محتاجين <b class="en">IPC</b>. فيه موديلين:</p>
+<div class="w"><div class="ipc">
+<div><b>Shared memory</b><div class="pp"><span>A</span><span>B</span></div><div class="mid">منطقة مشتركة في الـ RAM</div><p style="margin:6px 0 0">أسرع بعد ما تتعمل، لكن لازم تنسّق بنفسك.</p></div>
+<div><b>Message passing</b><div class="pp"><span>A</span><span>B</span></div><div class="mid">Message queue جوه الـ kernel</div><p style="margin:6px 0 0">أسهل وأأمن، لكن الـ kernel بيتدخل في كل رسالة.</p></div>
+</div></div></section>
+
+<section class="concept"><h3>الـ Thread ضد الـ Process: لو حاجة وقعت؟</h3>
+<p>المتصفح عنده 3 tabs. في الحالة الأولى هم 3 threads جوه process واحدة، وفي التانية 3 processes منفصلة. اكسر الـ tab رقم 2 وقارن.</p>
+<div class="w" data-w="thr"></div></section>
+
+<section class="concept"><h3>Concurrency ضد Parallelism</h3>
+<p>جرّب تغيّر عدد الـ cores وشوف إمتى الشغل بيتنفذ فعلاً في نفس اللحظة.</p>
+<div class="w" data-w="conc"></div></section>
+
+<section class="concept"><h3>موديلات الـ Multithreading</h3>
+<p>اختار الموديل، وبعدين اعمل «Block» لـ thread واحد (مثلاً بتستنى الـ disk) وشوف مين اللي هيتأثر.</p>
+<div class="w" data-w="models"></div></section>
+`};
+
+/* ===================== QUESTION BANK ===================== */
+/* non-tf: o[0] is the correct answer (options are shuffled on render). tf: use a (0=True,1=False). */
+const Q={
+l0:[
+{q:'Your friend says: “My Chrome app talks to the hard disk directly, nobody is in the middle.” What is wrong with that?',
+ o:['Every request from an application has to go through the Operating System first.','Applications can reach the disk directly, but only when the CPU is idle.','Only the keyboard needs the OS; the disk does not.','Applications are part of the hardware, so they are always allowed.'],
+ e:'التطبيقات عمرها ما بتلمس الـ hardware مباشرة. أي طلب بيعدّي على الـ OS الأول، لأنه هو الوسيط اللي بيحمي الموارد وبيوزّعها.'},
+{q:'Which sentence describes the kernel best?',
+ o:['The one program that is running at all times — the core of the OS.','The first application a user opens after login.','A chip on the motherboard that stores the BIOS.','Any program written in the C language.'],
+ e:'الـ kernel هو البرنامج الوحيد اللي شغال طول الوقت، وهو قلب الـ OS. باقي البرامج بتيجي وتمشي.'},
+{q:'A bank runs its salary reports every night. Similar jobs are grouped together and run one after another, and nobody types anything while they run. Which system is this?',
+ o:['Batch system','Time-sharing system','Hard real-time system','Handheld system'],
+ e:'ده الـ Batch: بنجمّع الـ jobs المتشابهة (automatic job sequencing) وبتتنفذ في طابور من غير تفاعل مع المستخدم. وهو أول نظام تشغيل بدائي.'},
+{q:'Job 1 is waiting for the disk, so the CPU quickly starts running Job 2. What is the main goal of this idea?',
+ o:['Keep the CPU as busy as possible (higher utilization).','Make the screen look better.','Reduce the size of RAM.','Stop users from sharing the computer.'],
+ e:'ده الـ Multiprogramming. أكتر من job في الميموري، ولما واحد يستنى I/O الـ CPU يروح للتاني. الهدف: ميبقاش الـ CPU فاضي.'},
+{q:'What is the extra feature of time-sharing compared with plain multiprogramming?',
+ o:['Users interact on-line, and jobs are swapped in and out between memory and disk.','Jobs never need memory.','The CPU is never switched between jobs.','Only one user is allowed at a time.'],
+ e:'الـ Time-sharing بيدّي المستخدم تفاعل مباشر (on-line)، والـ OS بيعمل swap للـ jobs بين الميموري والـ disk. والـ CPU بيتنقل بسرعة فكل واحد حاسس إنه لوحده.'},
+{q:'Which one is a HARD real-time system?',
+ o:['A car airbag controller','Watching a YouTube video','Playing a casual online game','A VR headset for entertainment'],
+ e:'سؤال الاختبار: «لو الـ deadline فات، هل ده كارثة؟». الـ airbag لو اتأخر ممكن يحصل ضرر خطير، فهو Hard. الفيديو والألعاب والـ VR مجرد جودة أقل، يعني Soft.'},
+{q:'In a multiprocessor system, the processors usually share the memory and the clock (tightly coupled).',tf:true,a:0,o:['True','False'],
+ e:'صح. الـ Multiprocessor يعني tightly coupled: المعالجات بتشارك الميموري والـ clock. عكسه الـ Distributed اللي هو loosely coupled وكل معالج له ميموري محلية.'},
+{q:'Why is the bootstrap program stored in ROM and not in RAM?',
+ o:['ROM keeps its content when power is off, and the computer needs the bootstrap at every start-up.','ROM is faster than the CPU.','RAM cannot store programs at all.','ROM can be edited by any user program at any time.'],
+ e:'الـ RAM بتفقد محتواها لما الكهربا تقطع (volatile)، فمينفعش نحط فيها أول برنامج بيشغّل الجهاز. الـ ROM بتحتفظ بيه.'},
+{q:'Which of these is a software interrupt (a trap)?',
+ o:['A program calls a system call to open a file.','The disk controller says it finished reading.','A printer sends a “paper jam” signal.','The user presses a key on the keyboard.'],
+ e:'الـ trap بييجي من البرنامج نفسه: إما error (زي القسمة على صفر) أو system call. الباقي كله إشارات جاية من أجهزة، يعني hardware interrupts.'},
+{q:'Why must the OS save the state of the interrupted process before running the interrupt service routine?',hard:true,
+ o:['So the process can later resume exactly where it stopped.','So the process can be deleted from memory.','So the interrupt vector can be rebuilt.','So the disk controller can start again.'],
+ e:'لو مفيش حفظ لحالة العملية (الـ PC والـ registers)، مش هنعرف نرجعلها من نفس النقطة، وهتضيع شغلها. علشان كده الـ interrupts لازم تتعامل بسرعة وبتحفظ الحالة الأول.'},
+{q:'What is the advantage of the interrupt vector compared with the generic mechanism (examine the interrupt, then call the matching routine)?',hard:true,
+ o:['It is a table of addresses, so the CPU jumps directly to the right routine without searching.','It removes the need for service routines.','It lets user programs safely change the routines.','It makes interrupts happen less often.'],
+ e:'الـ interrupt vector جدول فيه عناوين الـ routines، فالـ CPU بيدور على العنوان مباشرة بدل ما يفحص ويقارن. وده المستخدم فعلاً في UNIX و DOS.'},
+{q:'A system has 4 CPUs sharing memory. One CPU fails and the system keeps working, just a bit slower. Which advantage is this?',hard:true,
+ o:['Increased reliability (graceful degradation)','Increased throughput','Economy of scale','Time-sharing'],
+ e:'استمرار الشغل بعد عطل واحد بسرعة أقل اسمه graceful degradation، وده جزء من الـ reliability. الـ throughput معناه شغل أكتر في وقت أقل، والـ economy معناه تكلفة أقل.'}
+],
+l2:[
+{q:'Which one of these is software?',
+ o:['Device driver','Device controller','Disk platter','System bus'],
+ e:'الـ driver برنامج بيكلّم الـ controller. الـ controller شريحة hardware، والـ platter والـ bus أجزاء hardware برضه.'},
+{q:'A photo app asks the OS to read a big picture, and it keeps showing a loading animation while the file is being read. Which I/O method is this?',
+ o:['Asynchronous I/O','Synchronous I/O','Batch I/O','Tape I/O'],
+ e:'في الـ Asynchronous الـ control بيرجع للبرنامج فوراً، والـ I/O بيكمل في الخلفية، فالبرنامج يقدر يكمل شغل (زي الأنيميشن).'},
+{q:'With synchronous I/O, when does control return to the user process?',
+ o:['Only after the I/O operation completes.','Immediately after the request starts.','Before the device driver is called.','Never; the process is deleted.'],
+ e:'في الـ Synchronous البرنامج بيقف ويستنى لحد ما الـ I/O يخلص، وبعدها بس الـ control بيرجعله.'},
+{q:'A disk reads one block of 4096 bytes using DMA. How many interrupts are generated for the whole block?',
+ o:['One','4096','Two per byte','None at all'],
+ e:'الـ DMA بيعمل interrupt واحد بس لكل block، بدل interrupt لكل byte. وده بيوفّر على الـ CPU وقت ضخم. جرّب الـ slider في الشرح.'},
+{q:'Which device benefits MOST from DMA?',
+ o:['A fast disk transferring large blocks of data','A keyboard sending one letter at a time','A mouse sending small movements','A power button'],
+ e:'الـ DMA بيتستخدم مع الأجهزة السريعة اللي بتنقل بيانات كبيرة قريبة من سرعة الميموري، زي الـ disk.'},
+{q:'Main memory (RAM) is the only large storage that the CPU can access directly.',tf:true,a:0,o:['True','False'],
+ e:'صح. الـ CPU بيوصل للـ RAM مباشرة، أما الـ disk فهو secondary storage، والبيانات لازم تتنقل منه للـ RAM الأول.'},
+{q:'Going down the storage hierarchy from registers to magnetic tapes, what happens?',
+ o:['Capacity gets bigger, access gets slower, and cost per byte gets lower.','Capacity gets smaller and access gets faster.','Everything becomes volatile.','Cost per byte increases.'],
+ e:'الأسرع هو الأصغر والأغلى لكل byte. كل ما نمشي لتحت السعة بتزيد، السرعة بتقل، والسعر لكل byte بيقل.'},
+{q:'What is the correct order on a magnetic disk, from the whole surface down to the smallest piece?',
+ o:['Surface → Tracks → Sectors','Sectors → Tracks → Surface','Tracks → Surface → Sectors','Sectors → Surface → Tracks'],
+ e:'السطح بيتقسم لـ tracks (دواير)، وكل track بيتقسم لـ sectors.'},
+{q:'Why are magnetic tapes used for backup and archives but not as main memory?',
+ o:['Data must be read sequentially, so access is very slow.','They are volatile.','The CPU cannot read any storage.','They are too small.'],
+ e:'الشريط لازم تقراه بالترتيب (sequential)، فالوصول بطيء جداً. بس ممتاز للـ backup والبيانات اللي نادراً بتتستخدم.'},
+{q:'A user program tries to run a privileged instruction (for example, halting the CPU). What happens?',
+ o:['The hardware traps to the OS instead of executing it.','The instruction runs normally.','The CPU switches to kernel mode and executes it.','The computer restarts automatically.'],
+ e:'التعليمات الـ privileged مسموحة في kernel mode بس. لو اتنفذت في user mode، الـ hardware بيعمل trap للـ OS بدل ما ينفذها.'},
+{q:'Which statement about monolithic kernels and microkernels is correct?',
+ o:['Monolithic is fast because components call each other directly, but one bug can crash the system.','A microkernel is faster because it never uses message passing.','Monolithic kernels keep drivers in user space.','A microkernel puts every service inside the kernel.'],
+ e:'الـ Monolithic سريع لأن كل حاجة في kernel واحد، لكن غلطة واحدة تقدر تقع النظام. الـ Microkernel أأمن لأن الـ drivers برا الـ kernel، لكن الـ message passing بيبطّأه.'},
+{q:'Base register = 300040 and limit register = 120900. A program tries to access address 420940. What happens?',hard:true,
+ o:['Illegal: a trap goes to the OS, because the legal range ends at 420939.','Legal: the address is inside the range.','Legal: only addresses below the base are illegal.','The address is converted to 120900.'],
+ e:'المدى المسموح من 300040 لحد (300040 + 120900 − 1) = 420939. العنوان 420940 برا المدى، فالـ hardware بيعمل trap للـ OS. جرّب الأرقام في التجربة.'},
+{q:'Linux is called a monolithic kernel, but it can load drivers while it is running. Which design idea explains this?',hard:true,
+ o:['Loadable kernel modules','A pure layered design','Microkernel message passing','Batch processing'],
+ e:'Linux بيستخدم loadable kernel modules: kernel أساسي صغير بيحمّل الـ drivers والـ file systems وقت التشغيل، مع نداءات مباشرة زي الـ monolithic.'},
+{q:'In a 3-node cluster, Node A runs the application while B and C only wait to take over if A fails. What is this called?',hard:true,
+ o:['Asymmetric clustering','Symmetric clustering','Hard real-time','Multiprogramming'],
+ e:'Asymmetric: سيرفر واحد شغال والباقي stand-by. في الـ Symmetric كل الـ hosts بتشغّل التطبيق في نفس الوقت.'},
+{q:'What is the job of the timer in CPU protection?',
+ o:['Force control back to the OS so an infinite loop cannot keep the CPU forever.','Measure how long the user was logged in.','Speed up the disk.','Protect memory addresses with base and limit.'],
+ e:'الـ timer بيعمل interrupt بعد وقت محدد، فالـ OS ياخد الـ CPU تاني حتى لو برنامج دخل في infinite loop. الحماية بـ base و limit خاصة بالـ memory.'}
+],
+l3:[
+{q:'You double-click Chrome three times and three windows open. What does that show?',
+ o:['One program can be the source of many processes.','A process can exist only once per computer.','Programs are active entities.','Chrome has no address space.'],
+ e:'البرنامج ملف واحد على الـ disk، لكن كل مرة بتشغّله بيتعمل process جديدة. يعني برنامج واحد ممكن يطلّع processes كتير.'},
+{q:'In the memory layout of a process, where do local variables and function calls live?',
+ o:['Stack','Heap','Text','Data'],
+ e:'الـ stack بيشيل الـ local variables وبيانات استدعاء الـ functions. الـ heap للـ memory الديناميكية، والـ data للـ global/static، والـ text للكود نفسه.'},
+{q:'In the code values = new int[5];  the 5 integers are created in which section?',
+ o:['Heap','Stack','Text','Registers'],
+ e:'أي حاجة بتتحجز بـ new (ديناميكياً) بتروح على الـ heap. المتغير values نفسه (المؤشر) هو اللي على الـ stack.'},
+{q:'Which information is kept inside the PCB?',
+ o:['Process state, PID, program counter and CPU registers','The user’s browsing history','The whole content of the hard disk','The keyboard layout'],
+ e:'الـ PCB فيه: الـ state والـ PID والـ program counter والـ registers ومعلومات scheduling وmemory وaccounting وI/O.'},
+{q:'A running process asks to read a file from the disk. Which state change happens?',
+ o:['Running → Waiting','Running → Ready','Ready → Running','Waiting → Terminated'],
+ e:'لما العملية تطلب I/O بتروح Waiting لحد ما الـ I/O يخلص، وبعدها ترجع Ready.'},
+{q:'The time slice ends and the scheduler takes the CPU away, but the process still wants to run. Which transition is this?',
+ o:['Running → Ready','Running → Waiting','New → Ready','Waiting → Ready'],
+ e:'العملية لسه عايزة تشتغل بس الوقت خلص (interrupt)، فبترجع لطابور الـ Ready وتستنى دورها تاني.'},
+{q:'During a context switch the system is doing useful work for the user programs.',tf:true,a:1,o:['True','False'],
+ e:'غلط. الـ context switch هو pure overhead: النظام بيحفظ ويحمّل حالات بس، ومفيش شغل مفيد للمستخدم بيتنفذ في الوقت ده.'},
+{q:'Which scheduler decides which programs are brought from disk into RAM and controls the degree of multiprogramming?',
+ o:['Long-term scheduler','Short-term scheduler','Medium-term scheduler','Interrupt vector'],
+ e:'الـ Long-term (Job scheduler) بيقرر مين يدخل الـ RAM. الـ Short-term بيختار مين ياخد الـ CPU (بالمللي ثانية). والـ Medium-term (Swapper) بيشيل عمليات مؤقتاً من الـ RAM للـ disk.'},
+{q:'Two cooperating processes want to exchange data. Which are the two IPC models?',
+ o:['Shared memory and message passing','Stack and heap','Synchronous and asynchronous I/O','User mode and kernel mode'],
+ e:'الـ IPC بيتم بطريقتين: shared memory (منطقة مشتركة) أو message passing (رسائل عن طريق الـ kernel).'},
+{q:'Which of these is shared between the threads of the same process?',
+ o:['Code, data and open files','Stack','Program counter','Registers'],
+ e:'الـ threads بتتشارك الكود والـ data والـ files. لكن كل thread له stack وregisters وprogram counter خاصين بيه.'},
+{q:'Why is creating a thread cheaper than creating a process?',
+ o:['Threads share the process memory, so no new address space or page tables are needed.','Threads do not run on the CPU.','Threads never need a stack.','Threads can only run in user mode.'],
+ e:'عمل process جديدة محتاج نسخ page tables وحجز memory منفصلة وشغل كتير. الـ thread بيشارك memory الـ process الموجودة، فهو lightweight.'},
+{q:'A single-core CPU switches between T1, T2, T3 and T4 so fast that they all seem to run together. What is this?',
+ o:['Concurrency (not true parallelism)','Parallelism','Data parallelism','Multicore execution'],
+ e:'على core واحد الـ threads بتتبدّل بسرعة، فده concurrency. الـ parallelism الحقيقي (تنفيذ في نفس اللحظة) محتاج أكتر من core.'},
+{q:'Two cores add two big arrays: core 0 adds the first half and core 1 adds the second half. Which type of parallelism is this?',
+ o:['Data parallelism','Task parallelism','Context switching','Message passing'],
+ e:'نفس العملية (الجمع) على أجزاء مختلفة من البيانات: Data parallelism. أما Task parallelism فهو عمليات مختلفة، مثلاً thread يرتّب وthread يحسب المتوسط.'},
+{q:'In the many-to-one model, one user thread makes a blocking call. What happens?',
+ o:['All the threads of the process block.','Only that thread blocks.','The OS creates a new kernel thread automatically.','Nothing; the threads run on different cores.'],
+ e:'كل الـ user threads متربطة بـ kernel thread واحد، فلو واحد اتعطّل كله بيتعطّل، ومفيش true parallelism على الـ multicore.'},
+{q:'A web server must handle thousands of connections without freezing when one thread blocks, and it should use all the cores. Which model gives this, and what is its price?',hard:true,
+ o:['One-to-one: true parallelism, but every user thread needs a kernel thread (more memory and overhead).','Many-to-one: true parallelism at a very low cost.','Many-to-one: no blocking problem at all.','Many-to-many: it is the simplest one to implement.'],
+ e:'الـ One-to-one بيدّي parallelism حقيقي ومفيش تعطيل للكل، لكن إنشاء kernel thread لكل user thread بيستهلك memory وCPU. وبتستخدمه Windows وLinux. الـ Many-to-many أحسن نظرياً لكنه معقّد في التنفيذ.'},
+{q:'One browser tab crashes. Why can that kill every tab if tabs are threads in one process, but not if tabs are separate processes?',hard:true,
+ o:['Threads share one address space, while each process has its own separate one.','Processes share one stack.','Threads have private code sections.','Because processes use the same PCB.'],
+ e:'الـ threads بتتشارك نفس الـ address space، فغلطة في thread ممكن تبوّظ الـ memory المشتركة وتوقّع الـ process كلها. الـ processes كل واحدة في مساحتها، فبتتأثر لوحدها غالباً.'}
+]};
+
+/* ===================== ESSAY QUESTIONS ===================== */
+const E={
+l0:[
+{q:'What is an operating system? Explain its role and describe the four layers of a computer system.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>التعريف:</b> الـ <span class="en">OS</span> وسيط بين المستخدم والـ hardware، بيشغّل برامج المستخدم وبيستخدم الـ hardware بكفاءة.</li>
+<li><b>الدور:</b> بيدير ويوزّع الموارد (<span class="en">CPU, memory, storage, I/O devices</span>) وبيخبّي تعقيد الـ hardware.</li>
+<li><b>الطبقات الأربعة:</b> <span class="en">User → Application programs → Operating System → Hardware</span>.</li>
+<li><b>الـ Kernel:</b> البرنامج اللي شغال طول الوقت وهو قلب الـ OS.</li>
+<li><b>فكرة مهمة:</b> التطبيقات متتعاملش مع الـ hardware مباشرة، كل طلب بيعدّي على الـ OS.</li></ul>`},
+{q:'Compare batch, multiprogrammed and time-sharing systems.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b class="en">Batch:</b> بنجمّع jobs متشابهة وبتتنفذ بالترتيب (automatic job sequencing)، ومفيش تفاعل مع المستخدم أثناء التنفيذ.</li>
+<li><b class="en">Multiprogrammed:</b> أكتر من job في الميموري، ولما واحد يستنى I/O الـ CPU يروح لجوب تاني. الهدف: رفع الـ <span class="en">CPU utilization</span>.</li>
+<li><b class="en">Time-sharing:</b> الـ CPU بيتنقل بين الـ jobs بسرعة كبيرة، فيه تفاعل on-line مع المستخدم، وفيه swapping بين الميموري والـ disk.</li>
+<li><b>الخلاصة:</b> كل نظام حسّن اللي قبله: من «نجمع الشغل» إلى «منسيبش الـ CPU فاضي» إلى «المستخدم يتفاعل».</li></ul>`},
+{q:'Describe step by step what happens when an interrupt occurs. Why must the state of the interrupted process be saved?',
+ a:`<h5>الإجابة النموذجية</h5><ol>
+<li>الـ CPU بيتقاطع بإشارة (من جهاز أو من trap).</li>
+<li>بيوقّف العملية الحالية وبيحفظ حالتها (<span class="en">PC + registers</span>).</li>
+<li>بيروح لمكان ثابت / بيرجع للـ <span class="en">interrupt vector</span> يجيب عنوان الـ <span class="en">ISR</span> المناسب.</li>
+<li>بينفذ الـ <span class="en">interrupt service routine</span>.</li>
+<li>بيرجّع الحالة المحفوظة ويكمّل العملية.</li></ol>
+<p><b>ليه نحفظ الحالة؟</b> علشان العملية ترجع تكمل من نفس النقطة بالظبط من غير ما تضيع شغلها. ولازم الـ interrupts تتعامل بسرعة.</p>`},
+{q:'Compare multiprocessor, distributed and clustered systems. Then explain the difference between hard and soft real-time with one example each.',hard:true,
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b class="en">Multiprocessor:</b> أكتر من CPU، <span class="en">tightly coupled</span> بتتشارك الميموري والـ clock. المميزات: throughput أعلى، أرخص، reliability أعلى.</li>
+<li><b class="en">Distributed:</b> <span class="en">loosely coupled</span>، كل معالج له ميموري محلية، وبيتواصلوا بشبكة (<span class="en">LAN/WAN</span>). المميزات: resource sharing، speed-up، reliability.</li>
+<li><b class="en">Clustered:</b> جهازين أو أكتر بيتشاركوا storage لرفع الـ reliability. ممكن يكون <span class="en">asymmetric</span> أو <span class="en">symmetric</span>.</li>
+<li><b class="en">Hard real-time:</b> الـ deadline لو فات النتيجة كارثية. مثال: airbag. بتعتمد على ROM/ذاكرة قصيرة ومش بتتوافق مع time-sharing.</li>
+<li><b class="en">Soft real-time:</b> محتاج استجابة سريعة بس مش مطلقة. مثال: multimedia / VR. ممكن يتدمج مع time-sharing.</li></ul>`}
+],
+l2:[
+{q:'Explain the problem that DMA solves and how it works. How many interrupts are generated, and why is that better?',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>المشكلة:</b> لو الـ CPU اتقاطع لكل byte في نقل كبير (زي قراءة ملف) هيضيّع وقت ضخم.</li>
+<li><b>الحل:</b> الـ <span class="en">DMA controller</span> بينقل <b>blocks</b> من بافر الـ controller للـ main memory مباشرة من غير تدخل الـ CPU.</li>
+<li>بيتستخدم مع الأجهزة السريعة اللي سرعتها قريبة من الميموري.</li>
+<li><b>الـ interrupts:</b> interrupt <b>واحد</b> لكل block بدل واحد لكل byte، فالـ CPU فاضي لشغل مفيد.</li></ul>`},
+{q:'Explain the storage hierarchy. Why do we need several kinds of storage? Give examples of primary, secondary and tertiary storage.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>الفكرة:</b> الأجهزة بتتفاضل بالسرعة والتكلفة والسعة والـ volatility والـ reliability والـ portability. مفيش جهاز كويس في كل الحاجات، فبنستخدم كذا نوع مع بعض.</li>
+<li><b>Primary:</b> registers, cache, main memory (volatile، والـ CPU بيوصلها مباشرة).</li>
+<li><b>Secondary:</b> nonvolatile memory (SSD) وhard-disk drives.</li>
+<li><b>Tertiary:</b> optical disks وmagnetic tapes (للـ backup والـ archive).</li>
+<li><b>القاعدة:</b> كل ما نمشي لتحت: السعة أكبر، السرعة أقل، التكلفة لكل byte أقل.</li></ul>`},
+{q:'Explain the three hardware protection mechanisms (I/O, memory and CPU) and the role of dual-mode operation.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>الـ Dual-mode:</b> الـ <span class="en">mode bit</span> بيفرّق بين <span class="en">user mode</span> و<span class="en">kernel mode</span>، والتعليمات الـ privileged بتشتغل في kernel mode بس. لو اتنفذت في user mode يحصل trap.</li>
+<li><b class="en">I/O protection:</b> كل تعليمات الـ I/O privileged، فالبرنامج لازم يطلب من الـ OS بـ system call.</li>
+<li><b class="en">Memory protection:</b> بنستخدم <span class="en">base &amp; limit registers</span> لتحديد مدى العناوين المسموح لكل برنامج، وأي عنوان برا المدى يعمل trap.</li>
+<li><b class="en">CPU protection:</b> بنستخدم <span class="en">timer</span> بيعمل interrupt بعد وقت محدد، فالـ OS يرجّع الـ control حتى لو في infinite loop.</li>
+<li><b>الخطوات عند الخطأ:</b> الـ hardware يكتشف → trap للـ OS → الـ OS يعالج → يوقف العملية → dump لو لزم.</li></ul>`},
+{q:'Compare monolithic, layered and microkernel designs. Which one would you choose for a medical device, and why?',hard:true,
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b class="en">Monolithic:</b> كل الخدمات في kernel address space واحد. سريع، لكن صعب الصيانة وغلطة واحدة تقدر تقع النظام (UNIX, Linux).</li>
+<li><b class="en">Layered:</b> كل layer بتستخدم اللي تحتها بس. سهل البناء والـ debug، لكن صعب تحديد الـ layers وفيه overhead.</li>
+<li><b class="en">Microkernel:</b> الأساسيات بس في الـ kernel، والـ drivers والـ file systems كـ user-space servers. أأمن وأكثر ثباتاً، لكن الـ message passing بيبطّأ (Mach, QNX, MINIX).</li>
+<li><b>الاختيار:</b> الأنسب للجهاز الطبي <b class="en">Microkernel</b>، لأن الأمان والثبات أهم من السرعة القصوى: لو driver وقع، باقي النظام يفضل شغال، ويتعمله restart.</li>
+<li><b>ملاحظة:</b> الأنظمة الحديثة غالباً hybrid (Windows NT, macOS) أو modular (Linux).</li></ul>`}
+],
+l3:[
+{q:'Differentiate between a program and a process, and explain the memory layout of a process.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b class="en">Program:</b> كيان passive، ملف فيه تعليمات على الـ disk. <b class="en">Process:</b> كيان active، البرنامج وهو شغال (program counter + stack + current activity).</li>
+<li>البرنامج بيبقى process لما الملف التنفيذي يتحمّل في الميموري، وبرنامج واحد ممكن يطلّع processes كتير.</li>
+<li><b>الـ memory layout:</b>
+<ul><li><span class="en">Text</span>: كود البرنامج.</li><li><span class="en">Data</span>: global و static variables.</li><li><span class="en">Heap</span>: ذاكرة ديناميكية (new / malloc).</li><li><span class="en">Stack</span>: local variables وبيانات استدعاء الـ functions.</li></ul></li></ul>`},
+{q:'What is a PCB? List its main fields. Explain context switching and why it is considered overhead.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>الـ PCB:</b> data structure بيستخدمها الـ OS لتتبع معلومات الـ process والتحكم فيها. واحدة لكل process، وبتتعمل لما تتقبل وبتتمسح لما تخلص.</li>
+<li><b>الحقول:</b> <span class="en">process state, PID, program counter, CPU registers, scheduling info, memory info, accounting info, I/O status</span>.</li>
+<li><b>الـ Context switch:</b> لما الـ CPU ينتقل من process لأخرى: يحفظ حالة القديمة في الـ PCB بتاعها ويحمّل حالة الجديدة من الـ PCB بتاعها.</li>
+<li><b>ليه overhead؟</b> لأن النظام مبيعملش شغل مفيد وقت التبديل، وسرعته بتتوقف على دعم الـ hardware.</li></ul>`},
+{q:'Compare a process and a thread using at least five points, and mention the benefits of multithreading.',
+ a:`<h5>الإجابة النموذجية</h5>
+<div class="scroll"><table class="tbl ltr"><tr><th>Aspect</th><th>Process</th><th>Thread</th></tr>
+<tr><td>Definition</td><td>Program in execution</td><td>Unit of execution inside a process</td></tr>
+<tr><td>Memory</td><td>Own address space</td><td>Shares process address space</td></tr>
+<tr><td>Own resources</td><td>Code, data, heap, files</td><td>Stack, registers, PC</td></tr>
+<tr><td>Creation cost</td><td>Heavy</td><td>Light</td></tr>
+<tr><td>Communication</td><td>Needs OS (IPC)</td><td>Shared variables</td></tr>
+<tr><td>If it crashes</td><td>Others usually unaffected</td><td>Whole process may go down</td></tr></table></div>
+<p><b>فوايد الـ multithreading:</b> <span class="en">Responsiveness, Resource sharing, Economy, Scalability</span> (الاستفادة من الـ multicore).</p>`},
+{q:'Explain the three multithreading models. Which one do Windows and Linux use, and why is many-to-one rarely used today?',hard:true,
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b class="en">Many-to-One:</b> كتير من الـ user threads على kernel thread واحد. لو واحد اتعطّل الكل بيتعطّل، ومفيش parallelism على الـ multicore. (تشبيه: خط تليفون واحد لكذا موظف).</li>
+<li><b class="en">One-to-One:</b> كل user thread له kernel thread. parallelism حقيقي والباقي مش بيتأثر لو واحد اتعطّل، لكن تكلفته في الميموري والـ CPU أعلى.</li>
+<li><b class="en">Many-to-Many:</b> بيوزّع كتير من user threads على عدد أقل أو مساوي من kernel threads. بياخد مميزات الاتنين، لكن معقّد في التنفيذ.</li>
+<li><b>الاستخدام:</b> Windows وLinux بيستخدموا <b class="en">One-to-One</b>.</li>
+<li><b>ليه Many-to-One قليل؟</b> لأنه مبيستفيدش من الـ multicore وتعطيل thread واحد بيوقّف الكل.</li></ul>`}
+]};
+
+/* ===================== WIDGET DATA ===================== */
+const PICK={
+types:[
+ {n:'Batch',h:`<span class="tag b">Keyword</span> Automatic job sequencing<p>بنجمّع الشغل المتشابه ونشغّله واحد ورا التاني من غير تدخل المستخدم. ده أول نظام تشغيل بدائي. <b>مثال:</b> كشوف المرتبات بالليل.</p>`},
+ {n:'Multiprogrammed',h:`<span class="tag b">Keyword</span> CPU utilization<p>أكتر من job في الميموري، ولما واحد يستنى I/O الـ CPU يروح للتاني. الهدف إن الـ CPU يفضل مشغول.</p>`},
+ {n:'Time-sharing',h:`<span class="tag b">Keyword</span> Interactive · Swapping<p>الـ CPU بيتنقل بسرعة بين المستخدمين فكل واحد حاسس إنه لوحده، وفيه تفاعل on-line وswapping بين الميموري والـ disk.</p>`},
+ {n:'Desktop',h:`<span class="tag b">Keyword</span> Single user · Convenience<p>جهاز لمستخدم واحد. الأولوية لسهولة الاستخدام والاستجابة، ومميزات الحماية المتقدمة أقل أهمية. بيشغّل Windows أو macOS أو Linux أو UNIX.</p>`},
+ {n:'Multiprocessor',h:`<span class="tag b">Keyword</span> Tightly coupled<p>أكتر من CPU بيتشاركوا الميموري والـ clock. المميزات: <span class="en">throughput</span> أعلى، أوفر، و<span class="en">reliability</span> أعلى (graceful degradation).</p>`},
+ {n:'Distributed',h:`<span class="tag b">Keyword</span> Loosely coupled<p>معالجات كل واحد له ميموري محلية وبيتواصلوا بشبكة (<span class="en">LAN / WAN</span>). فيه موديلين: <span class="en">Client-Server</span> و<span class="en">Peer-to-Peer</span>.</p>`},
+ {n:'Clustered',h:`<span class="tag b">Keyword</span> Shared storage<p>جهازين أو أكتر بيتشاركوا storage لرفع الاعتمادية. <span class="en">Asymmetric</span>: واحد شغال والباقي stand-by. <span class="en">Symmetric</span>: الكل شغال.</p>`},
+ {n:'Real-time',h:`<span class="tag b">Keyword</span> Deadlines<p>ليه قيود وقت صارمة. أمثلة: أجهزة طبية، تحكم صناعي. بينقسم لـ <span class="en">Hard</span> و<span class="en">Soft</span>.</p>`},
+ {n:'Handheld',h:`<span class="tag b">Keyword</span> Limited resources<p>PDAs والموبايلات. التحديات: ميموري أقل، معالج أبطأ، وشاشة صغيرة بتحدد شكل الواجهة.</p>`},
+ {n:'Environments',h:`<span class="tag b">Keyword</span> Traditional · Web · Embedded<p><b class="en">Traditional:</b> PCs وسيرفرات. <b class="en">Web-based:</b> client-server وخدمات ويب (cloud). <b class="en">Embedded:</b> ميزات OS محدودة جداً وغالباً من غير واجهة.</p>`}
+],
+sched:[
+ {n:'Long-term (Job)',h:`<p>بيحدد مين من البرامج على الـ disk يدخل الـ RAM، ويتحكم في الـ <span class="en">degree of multiprogramming</span>. بيتنفذ كل فترة طويلة نسبياً (Batch systems و Supercomputers).</p>`},
+ {n:'Short-term (CPU)',h:`<p>بيختار مين من الـ ready threads في الـ RAM ياخد الـ CPU دلوقتي. بيتنفذ كتير جداً، بالمللي ثانية.</p>`},
+ {n:'Medium-term (Swapper)',h:`<p>بيشيل عمليات من الـ RAM للـ disk مؤقتاً (swap) لتخفيف الضغط على الميموري وقت الحمل العالي.</p>`},
+ {n:'Queues',h:`<p><b class="en">Job queue:</b> كل الـ processes في النظام. <b class="en">Ready queue:</b> اللي في الـ RAM وجاهزة تتنفذ. <b class="en">Device queues:</b> اللي مستنية جهاز I/O. والـ processes بتتنقل بين الطوابير دي.</p>`}
+],
+designs:[
+ {n:'Monolithic',h:`<p>كل الخدمات في kernel address space واحد. <span class="tag g">سريع</span> <span class="tag r">صيانته صعبة، غلطة واحدة تقع النظام</span><br><b>أمثلة:</b> UNIX التقليدي، Linux.</p>`},
+ {n:'Layered',h:`<p>الـ layer رقم N بتستخدم خدمات الـ layer اللي تحتها بس. <span class="tag g">سهل البناء والـ debug</span> <span class="tag r">صعب تحدد الـ layers + overhead</span><br><b>مثال:</b> نظام THE (Dijkstra).</p>`},
+ {n:'Microkernel',h:`<p>الأساسيات بس في الـ kernel (scheduling, memory, IPC)، والـ drivers والـ file systems بتشتغل كـ user-space servers. <span class="tag g">أأمن</span> <span class="tag r">الـ message passing بيبطّأ</span><br><b>أمثلة:</b> Mach, QNX, MINIX.</p>`},
+ {n:'Loadable modules',h:`<p>kernel أساسي صغير بيحمّل الخدمات (drivers, file systems) وقت التشغيل. مرن زي الـ layers وبنداءات مباشرة زي الـ monolithic.<br><b>أمثلة:</b> Linux, Solaris, FreeBSD.</p>`},
+ {n:'Hybrid',h:`<p>بيجمع كذا تصميم: core بأسلوب monolithic للسرعة + أجزاء microkernel أو modular للمرونة.<br><b>أمثلة:</b> Windows NT, macOS و iOS (XNU).</p>`}
+]};
+
+const STEPS={
+boot:[
+ {t:'1) Power up',d:'بتدوس على زرار التشغيل. الـ RAM فاضية تماماً، فلازم حاجة تانية تبدأ الشغل.'},
+ {t:'2) Bootstrap runs from ROM',d:'أول برنامج بيشتغل هو الـ bootstrap، وهو متخزن في ROM لأنه لازم يفضل موجود بعد ما الجهاز يتفصل.'},
+ {t:'3) Initialize + load the kernel',d:'الـ bootstrap بيجهّز الـ CPU registers والـ device controllers ومحتويات الميموري، وبعدين بيحمّل الـ OS kernel.'},
+ {t:'4) Kernel starts the first process: init',d:'الـ kernel بيشغّل أول process اسمها init، وبعدها يبدأ باقي النظام.'},
+ {t:'5) init waits for events',d:'بعد كده النظام بيفضل مستني أحداث (interrupts). علشان كده بنقول إن الـ OS «interrupt-driven».'}
+],
+interrupt:[
+ {t:'1) A process is running',d:'الـ CPU مشغول بتنفيذ عملية، والـ disk بيقرأ الملف في الخلفية.',c:[['Process','running','run'],['ISR','idle','idle']]},
+ {t:'2) The device raises an interrupt',d:'الـ disk controller خلّص، فبعت إشارة للـ CPU: «أنا خلصت».',c:[['Process','running','run'],['Interrupt','arrived!','busy']]},
+ {t:'3) CPU stops and saves the state',d:'الـ CPU بيوقّف العملية ويحفظ حالتها (الـ PC والـ registers) علشان يعرف يرجعلها.',c:[['Process','paused (state saved)','busy'],['ISR','idle','idle']]},
+ {t:'4) Jump to the ISR via the interrupt vector',d:'الـ CPU بيبص في جدول الـ interrupt vector، بيجيب عنوان الـ ISR المناسب وينفذه.',c:[['Process','paused','busy'],['ISR','running','run']]},
+ {t:'5) Resume the process',d:'لما الـ ISR تخلص، الـ CPU بيرجّع الحالة المحفوظة والعملية تكمل من نفس النقطة بالظبط.',c:[['Process','running again','run'],['ISR','done','idle']]}
+],
+ctx:[
+ {t:'1) P0 is executing',d:'العملية P0 شغالة على الـ CPU، و P1 مستنية في الـ ready queue.',c:[['P0','executing','run'],['OS','idle','idle'],['P1','idle','idle']]},
+ {t:'2) Interrupt or system call',d:'حصل interrupt أو system call، فالـ OS بياخد الـ control من P0.',c:[['P0','stopped','busy'],['OS','handling','busy'],['P1','idle','idle']],o:true},
+ {t:'3) Save state into PCB0',d:'الـ OS بيحفظ حالة P0 (الـ registers والـ PC...) في الـ PCB بتاعها.',c:[['P0','idle','idle'],['OS','saving PCB0','busy'],['P1','idle','idle']],o:true},
+ {t:'4) Reload state from PCB1',d:'الـ OS بيحمّل حالة P1 المحفوظة من الـ PCB بتاعها.',c:[['P0','idle','idle'],['OS','loading PCB1','busy'],['P1','idle','idle']],o:true},
+ {t:'5) P1 is executing',d:'دلوقتي P1 هي اللي شغالة. وفي الـ switch الجاي هيتعمل نفس الكلام بالعكس: save PCB1 ثم reload PCB0.',c:[['P0','idle','idle'],['OS','idle','idle'],['P1','executing','run']]}
+]};
+
+const RT=[
+ {t:'Airbag controller in a car',a:'hard',r:'لو الـ airbag اتأخر ثانية ممكن يبقى في إصابة خطيرة، فالـ deadline مصيري.'},
+ {t:'Video streaming (Netflix)',a:'soft',r:'لو فريم اتأخر هتحس بتقطيع بسيط بس، مجرد جودة أقل.'},
+ {t:'Pacemaker',a:'hard',r:'نبضة متأخرة ممكن تهدد حياة المريض.'},
+ {t:'Online multiplayer game',a:'soft',r:'ممكن يحصل lag بس اللعبة تكمل، محتاجة استجابة سريعة لكن مش مطلقة.'},
+ {t:'Emergency stop of an industrial robot arm',a:'hard',r:'لو التوقيت فات الذراع ممكن يأذي حد أو يتلف الماكينة.'},
+ {t:'Virtual reality headset (entertainment)',a:'soft',r:'تأخير بسيط بيقلل التجربة بس مش كارثة، وده مثال من الشرائح على الـ soft.'}
+];
+
+/* ===================== WIDGETS ===================== */
+W.layers=root=>{
+ const L=[
+  ['User','المستخدم: الشخص أو الجهاز اللي بيبعت الطلبات.'],
+  ['Application programs','التطبيقات: برامج بتحل مشاكل المستخدم، زي المتصفح والـ compiler والـ Word.'],
+  ['Operating System','الـ OS: بيدير الموارد (CPU, memory, I/O) وبيخبّي تعقيد الـ hardware. كل طلب بيعدّي عليه.'],
+  ['Hardware','الـ Hardware: الموارد الفعلية (CPU, memory, devices).']];
+ root.innerHTML=`<div class="layers">${L.map((l,i)=>`<button class="layer" data-i="${i}">${l[0]}</button>`).join('')}</div>
+ <div class="row" style="justify-content:center;margin-top:12px"><button class="btn" data-go>ابعت طلب: Save file</button></div>
+ <p class="note" data-n>اضغط على أي طبقة.</p>`;
+ const bs=$$('.layer',root),n=$('[data-n]',root);let busy=false;
+ bs.forEach((b,i)=>b.onclick=()=>{if(busy)return;bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');n.textContent=L[i][1]});
+ $('[data-go]',root).onclick=async()=>{
+  if(busy)return;busy=true;
+  const msgs=['المستخدم بيدوس Save.','التطبيق بيبعت الطلب للـ OS (system call).','الـ OS بيكلم الـ driver والـ hardware ويكتب على الـ disk.','الـ hardware بينفذ الكتابة.'];
+  const path=[0,1,2,3,2,1,0];
+  for(let k=0;k<path.length;k++){
+   bs.forEach(x=>x.classList.remove('on'));bs[path[k]].classList.add('on');
+   n.textContent=k<4?msgs[k]:(k===6?'الـ OS رجّع النتيجة، والمستخدم شاف «Saved».':'النتيجة بترجع لفوق عن طريق الـ OS.');
+   await sleep(650);
+  }
+  bs.forEach(x=>x.classList.remove('on'));busy=false;
+ };
+};
+
+W.picker=root=>{
+ const items=PICK[root.dataset.set];
+ root.innerHTML=`<div class="chips">${items.map((x,i)=>`<button class="chip${i?'':' on'}" data-i="${i}">${x.n}</button>`).join('')}</div><div class="note" data-d></div>`;
+ const d=$('[data-d]',root),cs=$$('.chip',root);
+ const show=i=>{cs.forEach((c,j)=>c.classList.toggle('on',i===j));d.innerHTML=items[i].h};
+ cs.forEach((c,i)=>c.onclick=()=>show(i));show(0);
+};
+
+W.stepper=root=>{
+ const S=STEPS[root.dataset.set];let i=0;
+ function draw(){
+  const s=S[i];
+  root.innerHTML=`<div class="steps">${S.map((_,k)=>`<button data-k="${k}" aria-label="step ${k+1}" class="${k<i?'done':k===i?'cur':''}"></button>`).join('')}</div>
+  <div class="stitle">${s.t}</div>
+  ${s.c?`<div class="chipsrow">${s.c.map(c=>`<span class="state ${c[2]}">${c[0]}: ${c[1]}</span>`).join('')}</div>`:''}
+  ${s.o?`<span class="tag r">Pure overhead: مفيش شغل مفيد دلوقتي</span>`:''}
+  <p class="note">${s.d}</p>
+  <div class="row" style="margin-top:10px"><button class="btn ghost" data-p ${i===0?'disabled':''}>السابق</button><button class="btn" data-n>${i===S.length-1?'ابدأ من الأول':'التالي'}</button></div>`;
+  $$('.steps button',root).forEach(b=>b.onclick=()=>{i=+b.dataset.k;draw()});
+  $('[data-p]',root).onclick=()=>{if(i>0){i--;draw()}};
+  $('[data-n]',root).onclick=()=>{i=(i+1)%S.length;draw()};
+ }
+ draw();
+};
+
+W.rt=root=>{
+ let ok=0,done=0;
+ root.innerHTML=`<div data-l></div><p class="note" data-s>صنّف كل مثال: Hard ولا Soft؟</p>`;
+ const l=$('[data-l]',root),s=$('[data-s]',root);
+ RT.forEach(x=>{
+  const r=document.createElement('div');r.className='rtc';
+  r.innerHTML=`<div class="t">${x.t}</div><div class="row"><button class="btn ghost" data-v="hard">Hard</button><button class="btn ghost" data-v="soft">Soft</button></div><div class="fb"></div>`;
+  $$('button',r).forEach(b=>b.onclick=()=>{
+   if(r.dataset.d)return;r.dataset.d=1;done++;
+   const right=b.dataset.v===x.a;if(right)ok++;
+   $$('button',r).forEach(z=>{z.disabled=true;if(z.dataset.v===x.a)z.classList.add('on')});
+   $('.fb',r).innerHTML=`<span class="tag ${right?'g':'r'}">${right?'صح':'غلط'}</span> هو <b class="en">${x.a==='hard'?'Hard':'Soft'}</b>. ${x.r}`;
+   s.textContent=`إجاباتك الصح: ${ok} من ${done}${done===RT.length?' (خلّصت!)':''}`;
+  });
+  l.appendChild(r);
+ });
+};
+
+W.io=root=>{
+ const CFG={
+  sync:{p:[[20,'work','Working'],[50,'wait','Waiting...'],[30,'work','Working']],d:[[20,'idle',''],[50,'io','I/O running'],[30,'idle','']],n:'الـ program بيبعت الطلب وبعدها بيقف ويستنى. الـ control بيرجعله بعد ما الـ I/O يخلص. وقت الانتظار ده بيضيع.'},
+  async:{p:[[20,'work','Request'],[50,'work2','Does other work'],[30,'work','Uses result']],d:[[20,'idle',''],[50,'io','I/O running'],[30,'idle','']],n:'الـ control بيرجع للـ program فوراً بعد ما الـ I/O يبدأ. الـ I/O بيكمل في الخلفية والـ program بيشتغل في حاجات تانية.'}};
+ root.innerHTML=`<div class="seg ltr"><button data-m="sync" class="on">Synchronous</button><button data-m="async">Asynchronous</button></div>
+ <div class="lane"><span class="ln">Your program</span><div class="bar" data-p></div></div>
+ <div class="lane"><span class="ln">I/O device</span><div class="bar" data-d></div></div><p class="note" data-n></p>`;
+ const seg=a=>a.map(x=>`<div class="sg-${x[1]}" style="flex-basis:${x[0]}%">${x[2]}</div>`).join('');
+ const set=m=>{$$('.seg button',root).forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  $('[data-p]',root).innerHTML=seg(CFG[m].p);$('[data-d]',root).innerHTML=seg(CFG[m].d);$('[data-n]',root).textContent=CFG[m].n};
+ $$('.seg button',root).forEach(b=>b.onclick=()=>set(b.dataset.m));set('sync');
+};
+
+W.dma=root=>{
+ const sizes=[512,1024,2048,4096,8192];
+ root.innerHTML=`<div class="seg ltr"><button data-m="no" class="on">Without DMA</button><button data-m="dma">With DMA</button></div>
+ <svg class="svgbox" viewBox="0 0 600 250" role="img" aria-label="DMA diagram">
+  <defs><marker id="arR" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#dc2626"/></marker><marker id="arG" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#16a34a"/></marker></defs>
+  <rect class="box" x="20" y="14" width="130" height="66" rx="10"/><text x="85" y="53" text-anchor="middle" font-weight="700">CPU</text>
+  <rect class="box" x="235" y="14" width="130" height="66" rx="10"/><text x="300" y="53" text-anchor="middle" font-weight="700">Memory (RAM)</text>
+  <rect class="box" x="450" y="14" width="130" height="66" rx="10"/><text x="515" y="53" text-anchor="middle" font-weight="700">Disk</text>
+  <rect class="box" x="20" y="200" width="560" height="34" rx="8"/><text x="300" y="222" text-anchor="middle" font-weight="600">System Bus</text>
+  <path d="M85 80V200M300 80V200M515 80V200" stroke="currentColor" stroke-width="2" fill="none" opacity=".35"/>
+  <g data-no><path d="M500 84V190H72V88" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#arR)"/><path d="M100 84V176H286V88" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#arR)"/>
+   <text x="300" y="128" text-anchor="middle" fill="#dc2626" style="fill:#dc2626;font-weight:700">Every byte passes through the CPU</text></g>
+  <g data-dma style="display:none"><path d="M530 84V160H314V88" fill="none" stroke="#16a34a" stroke-width="3.5" marker-end="url(#arG)"/>
+   <text x="300" y="132" text-anchor="middle" style="fill:#16a34a;font-weight:700">Block goes Disk → Memory, bypassing the CPU</text></g>
+ </svg>
+ <label class="ltr" style="display:block;margin-top:8px"><b>Transfer size:</b> <span data-sz>4096</span> bytes</label>
+ <input type="range" min="0" max="4" step="1" value="3" data-r aria-label="transfer size">
+ <div class="cmp"><div><b>Without DMA</b><div class="big" data-a style="color:#dc2626">4096</div>interrupts<div class="meter"><i data-ma style="background:#dc2626;width:100%"></i></div></div>
+ <div><b>With DMA</b><div class="big" data-b style="color:#16a34a">1</div>interrupt<div class="meter"><i data-mb style="background:#16a34a;width:3%"></i></div></div></div>
+ <p class="note" data-n></p>`;
+ const mode=m=>{$$('.seg button',root).forEach(b=>b.classList.toggle('on',b.dataset.m===m));$('[data-no]',root).style.display=m==='no'?'':'none';$('[data-dma]',root).style.display=m==='dma'?'':'none';
+  $('[data-n]',root).textContent=m==='no'?'من غير DMA: الـ CPU بيشيل كل byte من الـ disk ويحطه في الـ RAM، وبيتقاطع كتير.':'مع DMA: الـ controller بينقل الـ block كله للـ RAM لوحده، والـ CPU مش بيتقاطع غير مرة واحدة في الآخر.'};
+ const upd=()=>{const n=sizes[+$('[data-r]',root).value];$('[data-sz]',root).textContent=n;$('[data-a]',root).textContent=n;
+  $('[data-ma]',root).style.width=Math.max(5,Math.log(n)/Math.log(8192)*100)+'%';$('[data-mb]',root).style.width='3%'};
+ $$('.seg button',root).forEach(b=>b.onclick=()=>mode(b.dataset.m));$('[data-r]',root).oninput=upd;mode('no');upd();
+};
+
+W.hier=root=>{
+ const L=[
+  ['Registers','أسرع وأصغر حاجة، جوه الـ CPU نفسه.','Primary',7,1,true],
+  ['Cache','ذاكرة سريعة صغيرة بين الـ CPU والـ RAM.','Primary',6,2,true],
+  ['Main memory (RAM)','الوحيد الكبير اللي الـ CPU يوصله مباشرة. بيفقد محتواه لما الكهربا تقطع.','Primary',5,3,true],
+  ['Nonvolatile memory (SSD)','ذاكرة flash بتحتفظ بالبيانات من غير كهربا، أسرع من الـ HDD.','Secondary',4,4,false],
+  ['Hard-disk drives','أقراص مغناطيسية بسعة كبيرة وسعر قليل، وأبطأ من الـ SSD.','Secondary',3,5,false],
+  ['Optical disk','أقراص CD/DVD، محمولة وبطيئة.','Tertiary',2,6,false],
+  ['Magnetic tapes','أكبر سعة وأرخص وأبطأ. لازم تتقرأ بالترتيب. للـ backup والـ archive.','Tertiary',1,7,false]];
+ root.innerHTML=`<div class="hwrap"><div class="pyr">${L.map((l,i)=>`<button class="lv" data-i="${i}" style="width:${46+i*9}%">${l[0]}</button>`).join('')}</div><div><div data-d></div></div></div>`;
+ const bs=$$('.lv',root),d=$('[data-d]',root);
+ const show=i=>{const l=L[i];bs.forEach((b,j)=>b.classList.toggle('on',i===j));
+  d.innerHTML=`<h4 class="ltr" style="margin:0 0 4px">${l[0]}</h4><span class="tag ${l[2]==='Primary'?'g':l[2]==='Secondary'?'b':'a'}">${l[2]}</span><span class="tag ${l[5]?'r':'g'}">${l[5]?'Volatile':'Non-volatile'}</span><p style="margin:8px 0">${l[1]}</p>
+  <div class="meters"><div><span>Speed</span><i style="width:${l[3]*13}%"></i></div><div><span>Capacity</span><i style="width:${l[4]*13}%"></i></div><div><span>Cost / byte</span><i style="width:${l[3]*13}%;background:#d97706"></i></div></div>`};
+ bs.forEach((b,i)=>b.onclick=()=>show(i));show(2);
+};
+
+W.disk=root=>{
+ const cx=130,cy=130,pt=(r,a)=>{const t=(a-90)*Math.PI/180;return[cx+r*Math.cos(t),cy+r*Math.sin(t)]};
+ const seg=(r0,r1,a0,a1)=>{const[x0,y0]=pt(r1,a0),[x1,y1]=pt(r1,a1),[x2,y2]=pt(r0,a1),[x3,y3]=pt(r0,a0);return`M${x0.toFixed(1)} ${y0.toFixed(1)}A${r1} ${r1} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}A${r0} ${r0} 0 0 0 ${x3.toFixed(1)} ${y3.toFixed(1)}Z`};
+ let p='';for(let t=0;t<3;t++)for(let s=0;s<8;s++){const r0=40+t*29,r1=r0+27;p+=`<path class="dseg" data-t="${t+1}" data-s="${s+1}" d="${seg(r0,r1,s*45+1.5,s*45+43.5)}"/>`}
+ root.innerHTML=`<div class="diskwrap"><svg viewBox="0 0 260 260" role="img" aria-label="disk platter"><circle cx="130" cy="130" r="128" fill="#9fb3c2" opacity=".35"/>${p}<circle cx="130" cy="130" r="13" fill="#0f2230"/><text x="130" y="134" text-anchor="middle" font-size="9" fill="#fff" style="fill:#fff">spindle</text></svg>
+ <div style="flex:1 1 220px"><p class="note" data-n>اضغط على sector.</p><p style="margin:8px 0 0;font-size:14.5px">الـ <b class="en">read/write head</b> بيتحرك على الـ track المطلوبة، وبعدها بيستنى الـ sector يعدّي تحته مع دوران الـ platter.</p></div></div>`;
+ const ps=$$('.dseg',root);
+ ps.forEach(x=>x.onclick=()=>{ps.forEach(z=>z.classList.remove('on'));x.classList.add('on');$('[data-n]',root).innerHTML=`اخترت: <b class="en">Track ${x.dataset.t}</b> · <b class="en">Sector ${x.dataset.s}</b>. الـ sector هو أصغر جزء بيتقرأ منه.`});
+};
+
+W.dual=root=>{
+ root.innerHTML=`<div class="modebox"><div class="modebadge u" data-b>User mode · mode bit = 1</div><div class="row"><button class="btn ghost" data-a="add">Normal instruction (add)</button><button class="btn" data-a="sys">System call: read file</button><button class="btn warn" data-a="priv">Privileged: halt the CPU</button></div></div>
+ <ul class="log" data-l><li>البرنامج شغال في user mode. جرّب أي زرار.</li></ul>`;
+ const b=$('[data-b]',root),l=$('[data-l]',root),bs=$$('[data-a]',root);let busy=false;
+ const add=(t,c)=>{const li=document.createElement('li');li.textContent=t;if(c)li.className=c;l.prepend(li)};
+ const setM=m=>{b.className='modebadge '+(m==='u'?'u':'k');b.textContent=m==='u'?'User mode · mode bit = 1':'Kernel mode · mode bit = 0'};
+ bs.forEach(x=>x.onclick=async()=>{
+  if(busy)return;busy=true;bs.forEach(z=>z.disabled=true);
+  const a=x.dataset.a;
+  if(a==='add')add('عادية: اتنفذت في user mode من غير مشاكل.','ok');
+  else if(a==='sys'){add('System call → trap: الـ CPU بيتحول لـ kernel mode.');setM('k');await sleep(900);add('الـ kernel نفّذ الشغل المطلوب (قرأ الملف).','ok');await sleep(500);setM('u');add('رجع لـ user mode (bit = 1).')}
+  else{add('حاولت تنفذ privileged instruction في user mode. الـ hardware عمل trap للـ OS بدل ما ينفذها، والـ OS غالباً هيوقف العملية.','bad');b.classList.add('shake');await sleep(450);b.classList.remove('shake')}
+  bs.forEach(z=>z.disabled=false);busy=false;
+ });
+};
+
+W.bl=root=>{
+ const base=300040,lim=120900,end=base+lim-1,max=600000;
+ root.innerHTML=`<div class="ltr"><b>Memory protection:</b> base = ${base}, limit = ${lim} → legal range: ${base} … ${end}</div>
+ <div class="track"><div class="rng" style="left:${base/max*100}%;width:${lim/max*100}%"></div><div class="mk" data-m style="left:0"></div></div>
+ <div class="row"><input class="numin" type="number" inputmode="numeric" value="350000" data-i aria-label="address"><button class="btn ghost" data-q="300040">300040</button><button class="btn ghost" data-q="420939">420939</button><button class="btn ghost" data-q="420940">420940</button><button class="btn ghost" data-q="150000">150000</button></div>
+ <p class="note" data-n></p>`;
+ const i=$('[data-i]',root),m=$('[data-m]',root),n=$('[data-n]',root);
+ const upd=()=>{const a=Number(i.value);if(i.value===''||isNaN(a)){n.textContent='اكتب عنوان.';return}
+  m.style.left=Math.min(100,Math.max(0,a/max*100))+'%';
+  const ok=a>=base&&a<base+lim;n.innerHTML=ok?`<span class="tag g">Legal</span> العنوان ${a} جوه المدى، فالوصول مسموح.`:`<span class="tag r">Trap</span> العنوان ${a} برا المدى، فالـ hardware بيعمل trap للـ OS (addressing error).`};
+ i.oninput=upd;$$('[data-q]',root).forEach(b=>b.onclick=()=>{i.value=b.dataset.q;upd()});upd();
+};
+
+W.timer=root=>{
+ root.innerHTML=`<div><b>CPU protection:</b> برنامج فيه infinite loop</div>
+ <label style="display:inline-flex;gap:8px;align-items:center;margin:8px 0;cursor:pointer"><input type="checkbox" data-t checked> <span class="en">Timer enabled</span></label>
+ <div class="track" style="margin-top:8px"><div class="rng" data-p style="left:0;width:0;background:var(--amber-soft);border-color:var(--amber)"></div></div>
+ <div class="row"><button class="btn" data-go>شغّل البرنامج المعيوب</button></div><p class="note" data-n>اضغط تشغيل.</p>`;
+ const p=$('[data-p]',root),n=$('[data-n]',root),go=$('[data-go]',root),t=$('[data-t]',root);let iv=null;
+ go.onclick=()=>{clearInterval(iv);let w=0;go.disabled=true;n.textContent='البرنامج شغال في loop لا نهائي...';
+  iv=setInterval(()=>{w+=2;p.style.width=Math.min(w,100)+'%';
+   if(t.checked&&w>=40){clearInterval(iv);n.innerHTML='<span class="tag g">Timer interrupt</span> الـ timer خلص وقته، والـ OS خد الـ CPU تاني وأوقف البرنامج. باقي النظام سليم.';go.disabled=false}
+   else if(!t.checked&&w>=100){clearInterval(iv);n.innerHTML='<span class="tag r">Frozen</span> من غير timer البرنامج ماسك الـ CPU للأبد، والنظام كله واقف.';go.disabled=false}
+  },60)};
+ t.onchange=()=>{clearInterval(iv);p.style.width='0';go.disabled=false;n.textContent='اضغط تشغيل.'};
+};
+
+W.struct=root=>{
+ root.innerHTML=`<div class="two">
+ <div class="os" data-mono><h4>Monolithic kernel</h4><div class="kernel"><small>kernel mode (everything inside)</small>
+  <div class="blk k" data-k>File system</div><div class="blk k" data-k>Scheduler</div><div class="blk k" data-k>Memory manager</div><div class="blk" data-drv>Device driver</div></div>
+  <p class="note" data-n style="min-height:0">سريع: كله بينادي على بعضه مباشرة.</p></div>
+ <div class="os" data-micro><h4>Microkernel</h4><div class="kernel"><small>kernel mode (essentials only)</small><div class="blk k" data-k>Scheduling · Memory · IPC</div></div>
+  <div class="userspace"><small>user space (servers)</small><div class="blk" data-k2>File server</div><div class="blk" data-drv>Device driver</div></div>
+  <p class="note" data-n style="min-height:0">أأمن: الـ driver برا الـ kernel.</p></div></div>
+ <div class="row" style="margin-top:12px"><button class="btn warn" data-c>اكسر الـ driver 💥</button><button class="btn ghost" data-r>إعادة</button></div>`;
+ const mono=$('[data-mono]',root),micro=$('[data-micro]',root);
+ const reset=()=>{$$('.blk',root).forEach(b=>b.classList.remove('dead','fix'));$('[data-n]',mono).textContent='سريع: كله بينادي على بعضه مباشرة.';$('[data-n]',micro).textContent='أأمن: الـ driver برا الـ kernel.'};
+ $('[data-r]',root).onclick=reset;
+ $('[data-c]',root).onclick=async()=>{reset();
+  $$('.blk',mono).forEach(b=>b.classList.add('dead'));$('[data-n]',mono).innerHTML='<b>System crash!</b> الـ driver جوه الـ kernel، فغلطته وقّعت النظام كله.';
+  $('[data-drv]',micro).classList.add('dead');$('[data-n]',micro).textContent='الـ driver وقع لوحده... باقي النظام شغال.';
+  await sleep(1300);
+  const d=$('[data-drv]',micro);if(d.classList.contains('dead')){d.classList.remove('dead');d.classList.add('fix');$('[data-n]',micro).innerHTML='الـ OS عمل restart للـ driver، والنظام كمّل عادي. <b>ده الـ reliability.</b>'}};
+};
+
+W.pmem=root=>{
+ let s=1,h=0,sel='stack';
+ const INFO={stack:'الـ <b class="en">stack</b>: local variables وبيانات استدعاء الـ functions. بيكبر لتحت كل ما تنادي function جديدة.',heap:'الـ <b class="en">heap</b>: الذاكرة الديناميكية اللي بتتحجز وقت التشغيل (new / malloc). بيكبر لفوق ناحية الـ stack.',data:'الـ <b class="en">data</b>: الـ global والـ static variables (زي x و y في الشريحة).',text:'الـ <b class="en">text</b>: كود البرنامج (التعليمات) نفسه.',free:'مساحة فاضية بين الـ stack والـ heap، وكل واحد بيكبر ناحية التاني.'};
+ function draw(){
+  root.innerHTML=`<div class="mem"><button class="seg-m m-stack ${sel==='stack'?'on':''}" data-k="stack">stack ↓ ${Array.from({length:s},(_,i)=>`<span class="fr">frame ${i+1}</span>`).join('')}</button>
+  <div class="seg-m m-free" data-k="free">free space</div>
+  <button class="seg-m m-heap ${sel==='heap'?'on':''}" data-k="heap">heap ↑ ${Array.from({length:h},(_,i)=>`<span class="hp">block ${i+1}</span>`).join('')}</button>
+  <button class="seg-m m-data ${sel==='data'?'on':''}" data-k="data">data</button>
+  <button class="seg-m m-text ${sel==='text'?'on':''}" data-k="text">text</button></div>
+  <div class="row" style="justify-content:center;margin-top:12px"><button class="btn" data-f ${s>=4?'disabled':''}>استدعي function</button><button class="btn" data-h ${h>=4?'disabled':''}>اعمل new</button><button class="btn ghost" data-z>إعادة</button></div>
+  <p class="note">${INFO[sel]}</p>`;
+  $$('[data-k]',root).forEach(b=>b.onclick=()=>{sel=b.dataset.k;draw()});
+  $('[data-f]',root).onclick=()=>{s++;sel='stack';draw()};
+  $('[data-h]',root).onclick=()=>{h++;sel='heap';draw()};
+  $('[data-z]',root).onclick=()=>{s=1;h=0;sel='stack';draw()};
+ }
+ draw();
+};
+
+W.pstate=root=>{
+ const P={new:[70,48],ready:[165,135],running:[360,135],terminated:[470,48],waiting:[262,225]};
+ const T=[['new','ready','admitted',0],['ready','running','scheduler dispatch',24],['running','ready','interrupt (time slice ends)',24],['running','waiting','I/O or event wait',0],['waiting','ready','I/O or event completion',0],['running','terminated','exit',0]];
+ const rx=54,ry=22;let cur='new',last=-1;
+ const edge=(a,b,off)=>{const [x1,y1]=P[a],[x2,y2]=P[b];const mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),nx=-dy/L,ny=dx/L;
+  const cx=mx+nx*off*(a==='running'&&b==='ready'?-1:1),cy=my+ny*off*(a==='running'&&b==='ready'?-1:1);
+  const clip=(px,py,tx,ty)=>{const ux=tx-px,uy=ty-py,l=Math.hypot(ux,uy),vx=ux/l,vy=uy/l,r=1/Math.sqrt((vx/rx)**2+(vy/ry)**2)+3;return[px+vx*r,py+vy*r]};
+  const s=clip(x1,y1,cx,cy),e=clip(x2,y2,cx,cy);return`M${s[0].toFixed(1)} ${s[1].toFixed(1)}Q${cx.toFixed(1)} ${cy.toFixed(1)} ${e[0].toFixed(1)} ${e[1].toFixed(1)}`};
+ function draw(){
+  const avail=T.map((t,i)=>[t,i]).filter(([t])=>t[0]===cur);
+  root.innerHTML=`<svg class="sv" viewBox="0 0 540 260" role="img" aria-label="process states">
+   <defs><marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="currentColor" style="fill:#64748b"/></marker></defs>
+   ${T.map((t,i)=>`<path class="${i===last?'hot':''}" d="${edge(t[0],t[1],t[3])}" marker-end="url(#arw)"/>`).join('')}
+   ${Object.entries(P).map(([k,[x,y]])=>`<ellipse class="${k===cur?'cur':''}" cx="${x}" cy="${y}" rx="${rx}" ry="${ry}"/><text class="${k===cur?'cur':''}" x="${x}" y="${y+5}">${k}</text>`).join('')}
+  </svg>
+  <div class="row" style="margin-top:10px;direction:ltr">${avail.length?avail.map(([t,i])=>`<button class="btn" data-i="${i}">${t[2]} → ${t[1]}</button>`).join(''):'<span class="tag r">Terminated: العملية خلصت.</span>'}<button class="btn ghost" data-z>إعادة</button></div>
+  <p class="note">${last<0?'العملية في حالة <b class="en">new</b>. اضغط على الانتقال المتاح.':`انتقلت من <b class="en">${T[last][0]}</b> إلى <b class="en">${T[last][1]}</b> بسبب: <b class="en">${T[last][2]}</b>.`}</p>`;
+  $$('[data-i]',root).forEach(b=>b.onclick=()=>{last=+b.dataset.i;cur=T[last][1];draw()});
+  $('[data-z]',root).onclick=()=>{cur='new';last=-1;draw()};
+ }
+ draw();
+};
+
+W.thr=root=>{
+ const tabs=['UI','Video','Network'];
+ root.innerHTML=`<div class="two">
+ <div class="os" data-a><h4>1 process · 3 threads</h4><div class="sharedrow">Shared: Code + Data + Files</div><div class="tabs3">${tabs.map(t=>`<div>${t}<br><small>stack + regs + PC</small></div>`).join('')}</div><button class="btn warn" data-c="a">اكسر thread رقم 2</button><p class="note" data-n style="min-height:0">كلهم في نفس الـ address space.</p></div>
+ <div class="os" data-b><h4>3 processes</h4><div class="sharedrow" style="background:var(--surface);color:var(--muted)">كل process لها memory منفصلة</div><div class="tabs3">${tabs.map(t=>`<div>${t}<br><small>own address space</small></div>`).join('')}</div><button class="btn warn" data-c="b">اكسر process رقم 2</button><p class="note" data-n style="min-height:0">كل واحدة في مساحتها.</p></div></div>
+ <div class="row" style="margin-top:10px"><button class="btn ghost" data-z>إعادة</button></div>`;
+ const A=$('[data-a]',root),B=$('[data-b]',root);
+ const rst=()=>{$$('.tabs3 div',root).forEach(d=>d.classList.remove('dead'));$('[data-n]',A).textContent='كلهم في نفس الـ address space.';$('[data-n]',B).textContent='كل واحدة في مساحتها.'};
+ $('[data-z]',root).onclick=rst;
+ $('[data-c="a"]',root).onclick=()=>{rst();$$('.tabs3 div',A).forEach(d=>d.classList.add('dead'));$('[data-n]',A).innerHTML='<b>The whole process went down.</b> الـ memory مشتركة، فالغلطة اتنقلت للكل.'};
+ $('[data-c="b"]',root).onclick=()=>{rst();$$('.tabs3 div',B)[1].classList.add('dead');$('[data-n]',B).innerHTML='واحدة بس وقعت، والباقي سليم (غالباً). <b>بس التواصل بينهم محتاج IPC وإنشاؤهم أتقل.</b>'};
+};
+
+W.conc=root=>{
+ const col=['t1','t2','t3','t4'],cell=(t,l)=>`<div class="sg-${l}">${t?'T'+t:''}</div>`;
+ root.innerHTML=`<div class="seg ltr"><button data-n="1" class="on">1 core</button><button data-n="2">2 cores</button></div><div data-v></div><p class="note" data-t></p>`;
+ const set=n=>{$$('.seg button',root).forEach(b=>b.classList.toggle('on',b.dataset.n==String(n)));
+  const v=$('[data-v]',root);
+  if(n===1){const s=[1,2,3,4,1,2,3,4,1];v.innerHTML=`<div class="lane"><span class="ln">core 1</span><div class="bar">${s.map(t=>cell(t,'t'+t)).join('')}</div></div>`;
+   $('[data-t]',root).innerHTML='<b class="en">Concurrency</b>: الـ threads بتتبدّل بسرعة على core واحد، فكأنها شغالة مع بعض، لكن في أي لحظة thread واحد بس هو اللي بينفذ.'}
+  else{const a=[1,3,1,3,1,3,1,3,1],b=[2,4,2,4,2,4,2,4,2];v.innerHTML=`<div class="lane"><span class="ln">core 1</span><div class="bar">${a.map(t=>cell(t,'t'+t)).join('')}</div></div><div class="lane"><span class="ln">core 2</span><div class="bar">${b.map(t=>cell(t,'t'+t)).join('')}</div></div>`;
+   $('[data-t]',root).innerHTML='<b class="en">Parallelism</b>: في نفس اللحظة thread على core 1 وthread على core 2 بينفذوا فعلاً مع بعض. ده محتاج multicore.'}};
+ $$('.seg button',root).forEach(b=>b.onclick=()=>set(+b.dataset.n));set(1);
+};
+
+W.models=root=>{
+ const M={
+  m1:{n:'Many-to-One',k:1,map:[0,0,0,0],par:'No',blk:()=>[0,1,2,3],kb:[0],t:'كل الـ user threads على kernel thread واحد. لو واحد اتعطّل الكل بيتعطّل، ومفيش parallelism. (قليل الاستخدام)'},
+  o2o:{n:'One-to-One',k:4,map:[0,1,2,3],par:'Yes',blk:i=>[i],kb:null,t:'كل user thread له kernel thread. الباقي بيكمل شغل عادي وبيشتغلوا parallel، لكن التكلفة أعلى. (Windows, Linux)'},
+  m2m:{n:'Many-to-Many',k:3,map:[0,0,1,2],par:'Yes',blk:i=>[i],kb:null,t:'كتير من user threads على عدد أقل أو مساوي من kernel threads. لو واحد اتعطّل الـ library بتنقل الباقي لـ kernel thread تاني. أحسن نظرياً لكن معقّد.'}};
+ let cur='o2o',bl=null;
+ function draw(){
+  const m=M[cur],ux=i=>80+i*133,kx=i=>m.k===1?293:m.k===3?110+i*183:80+i*133;
+  const bu=bl===null?[]:m.blk(bl);
+  const bk=bl===null?[]:(m.kb||[m.map[bl]]);
+  root.innerHTML=`<div class="seg ltr">${Object.entries(M).map(([k,v])=>`<button data-m="${k}" class="${k===cur?'on':''}">${v.n}</button>`).join('')}</div>
+  <svg class="mdl" viewBox="0 0 586 250" role="img" aria-label="${m.n}">
+   <text x="293" y="16">user threads (user space)</text><line x1="0" y1="118" x2="586" y2="118" style="stroke:var(--line);stroke-dasharray:5 4"/><text x="293" y="244">kernel threads (kernel space)</text>
+   ${m.map.map((k,i)=>`<line class="${bu.includes(i)?'bl':''}" x1="${ux(i)}" y1="68" x2="${kx(k)}" y2="168"/>`).join('')}
+   ${[0,1,2,3].map(i=>`<g class="ut ${bu.includes(i)?'bl':''}"><circle cx="${ux(i)}" cy="52" r="18"/><text x="${ux(i)}" y="57">UT${i+1}</text></g>`).join('')}
+   ${Array.from({length:m.k},(_,i)=>`<g class="kt ${bk.includes(i)?'bl':''}"><rect x="${kx(i)-26}" y="168" width="52" height="34" rx="8"/><text x="${kx(i)}" y="190">KT${i+1}</text></g>`).join('')}
+  </svg>
+  <div class="row" style="direction:ltr;margin-top:6px">${[0,1,2,3].map(i=>`<button class="btn ${bl===i?'warn':'ghost'}" data-b="${i}">Block UT${i+1}</button>`).join('')}<button class="btn ghost" data-z>Reset</button></div>
+  <p class="note"><span class="tag ${m.par==='Yes'?'g':'r'}">Parallel on multicore: ${m.par}</span> ${bl===null?m.t:(bu.length>1?'<b>كل الـ threads اتعطّلت!</b> لأن كلها ماشية على kernel thread واحد.':`<b>UT${bl+1}</b> بس هو اللي اتعطّل، والباقي شغال.`)}</p>`;
+  $$('[data-m]',root).forEach(b=>b.onclick=()=>{cur=b.dataset.m;bl=null;draw()});
+  $$('[data-b]',root).forEach(b=>b.onclick=()=>{bl=+b.dataset.b;draw()});
+  $('[data-z]',root).onclick=()=>{bl=null;draw()};
+ }
+ draw();
+};
+
+/* ===================== APP ===================== */
+const LEC=[
+ {id:'l0',n:'المحاضرة 1',s:'Intro, System Types & Interrupts'},
+ {id:'l2',n:'المحاضرة 2',s:'I/O, Storage, OS Structure & Protection'},
+ {id:'l3',n:'المحاضرة 3',s:'Processes & Threads'}];
+const TABS=[['c','شرح المفاهيم'],['q','الكويز'],['e','أسئلة مقالية']];
+let curL='l0',curT='c';
+
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+function buildQuiz(id,root){
+ const data=Q[id],total=data.length;
+ root.innerHTML=`<div class="scorebar"><div data-s>أجبت <b>0</b> من ${total} · الصح <b>0</b></div><div class="prog"><i></i></div>
+  <label><input type="checkbox" data-h> أسئلة المتميزين فقط ⭐</label><button class="btn ghost" data-r>إعادة المحاولة</button></div><div data-list></div>`;
+ const list=$('[data-list]',root),sb=$('[data-s]',root),pg=$('.prog i',root);
+ let ans=0,ok=0;
+ const upd=()=>{sb.innerHTML=`أجبت <b>${ans}</b> من ${total} · الصح <b>${ok}</b>${ans===total?` · <span class="final">النتيجة النهائية: ${ok}/${total}</span>`:''}`;pg.style.width=(ans/total*100)+'%'};
+ function render(){
+  ans=0;ok=0;list.innerHTML='';
+  data.forEach((d,qi)=>{
+   const opts=d.tf?d.o.map((t,i)=>({t,c:i===d.a})):shuffle(d.o.map((t,i)=>({t,c:i===0})));
+   const el=document.createElement('article');el.className='q'+(d.hard?' hard':'');
+   el.innerHTML=`<div class="qh"><span class="qn">${qi+1}</span>${d.hard?'<span class="tag a">للمتميزين ⭐</span>':''}${d.tf?'<span class="tag b">True / False</span>':''}</div>
+   <p class="qt"></p><div class="opts"></div>`;
+   $('.qt',el).textContent=d.q;
+   const box=$('.opts',el);
+   opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.innerHTML=`<b>${String.fromCharCode(65+i)}</b><span></span>`;$('span',b).textContent=o.t;
+    b.onclick=()=>{
+     if(el.dataset.done)return;el.dataset.done=1;ans++;
+     const right=o.c;if(right)ok++;
+     $$('.opt',el).forEach((x,k)=>{x.disabled=true;if(opts[k].c)x.classList.add('right')});
+     if(!right)b.classList.add('wrong');
+     const ex=document.createElement('div');ex.className='exp '+(right?'ok':'no');
+     ex.innerHTML=`<strong>${right?'✅ إجابة صحيحة':'❌ إجابة غلط'}</strong>${d.e}`;
+     el.appendChild(ex);upd();
+    };
+    box.appendChild(b);
+   });
+   list.appendChild(el);
+  });
+  upd();
+ }
+ $('[data-r]',root).onclick=()=>{render();window.scrollTo({top:root.getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'})};
+ $('[data-h]',root).onchange=e=>list.classList.toggle('only-hard',e.target.checked);
+ render();
+}
+
+function buildEssay(id,root){
+ root.innerHTML=`<p style="margin:0 0 14px;color:var(--muted)">فكّر في إجابتك الأول، وبعدها اضغط «اعرض الإجابة النموذجية» وقارن.</p>`;
+ E[id].forEach((d,i)=>{
+  const el=document.createElement('article');el.className='essay'+(d.hard?' hard':'');
+  el.innerHTML=`<div class="qh"><span class="qn">${i+1}</span>${d.hard?'<span class="tag a">للمتميزين ⭐</span>':''}</div><p class="qt"></p><button class="btn ghost" data-t>اعرض الإجابة النموذجية</button><div class="model" hidden>${d.a}</div>`;
+  $('.qt',el).textContent=d.q;
+  const m=$('.model',el),b=$('[data-t]',el);
+  b.onclick=()=>{m.hidden=!m.hidden;b.textContent=m.hidden?'اعرض الإجابة النموذجية':'اخفي الإجابة'};
+  root.appendChild(el);
+ });
+}
+
+const style=document.createElement('style');
+style.textContent='.only-hard .q:not(.hard){display:none}';document.head.appendChild(style);
+
+function init(){
+ const nq=LEC.reduce((s,l)=>s+Q[l.id].length,0),ne=LEC.reduce((s,l)=>s+E[l.id].length,0);
+ $('#stats').innerHTML=`<span class="stat"><b>${LEC.length}</b>محاضرات</span><span class="stat"><b>${nq}</b>سؤال اختيار</span><span class="stat"><b>${ne}</b>سؤال مقالي</span><span class="stat"><b>${$$('.concept').length||''}</b></span>`;
+ const stage=$('#stage');
+ LEC.forEach(l=>{
+  const lec=document.createElement('div');lec.className='lec';lec.dataset.l=l.id;lec.hidden=l.id!==curL;
+  lec.innerHTML=`<div class="panel" data-t="c">${CONCEPTS[l.id]}</div><div class="panel" data-t="q" hidden></div><div class="panel" data-t="e" hidden></div>`;
+  stage.appendChild(lec);
+  buildQuiz(l.id,$('[data-t="q"]',lec));buildEssay(l.id,$('[data-t="e"]',lec));
+  $$('[data-w]',lec).forEach(w=>W[w.dataset.w](w));
+ });
+ $('#stats').lastChild.remove();
+ $('#lecTabs').innerHTML=LEC.map(l=>`<button class="lec-tab" role="tab" data-l="${l.id}" aria-selected="${l.id===curL}"><b>${l.n}</b><small>${l.s}</small></button>`).join('');
+ $$('.lec-tab').forEach(b=>b.onclick=()=>{curL=b.dataset.l;show()});
+ show();
+}
+function show(){
+ $$('.lec-tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.l===curL));
+ $('#subTabs').innerHTML=TABS.map(([k,t])=>{
+  const c=k==='q'?` (${Q[curL].length} سؤال)`:k==='e'?` (${E[curL].length})`:'';
+  return`<button class="sub-tab" role="tab" data-t="${k}" aria-selected="${k===curT}">${t}${c}</button>`}).join('');
+ $$('.sub-tab').forEach(b=>b.onclick=()=>{curT=b.dataset.t;show()});
+ $$('.lec').forEach(l=>{l.hidden=l.dataset.l!==curL;$$('.panel',l).forEach(p=>p.hidden=p.dataset.t!==curT)});
+}
+init();
+</script>
+</body>
+</html>
