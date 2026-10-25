@@ -58,9 +58,16 @@ button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
 @keyframes ringglow{0%{opacity:.15}50%{opacity:1;filter:brightness(1.5)}100%{opacity:.9}}
 @media (prefers-reduced-motion:reduce){.ring{animation:none}}
 
+.gantt{position:relative;height:42px;border:1px solid var(--line);border-radius:10px;overflow:hidden;direction:ltr;margin-top:6px;background:var(--surface2)}
+.gantt div{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border-inline-end:1px solid rgba(255,255,255,.7);overflow:hidden}
+.ticks{position:relative;height:22px;direction:ltr;font-size:12px;color:var(--muted);margin-bottom:6px}
+.ticks span{position:absolute;transform:translateX(-50%);top:2px}
+.chips .chip{white-space:normal;text-align:left}
+label{font-size:14.5px}
+.row label{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
 /* ---------- layout ---------- */
 main{max-width:1080px;margin:-42px auto 0;padding:0 16px 40px;position:relative}
-.lec-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.lec-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .lec-tab{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center;box-shadow:var(--shadow);transition:border-color .15s,background .15s}
 .lec-tab b{display:block;font-size:17px}
 .lec-tab small{display:block;color:var(--muted);font-size:12.5px;line-height:1.4;direction:ltr}
@@ -301,9 +308,10 @@ footer span{font-size:14px;direction:ltr;display:block;opacity:.85}
   <div class="sub-tabs" role="tablist" id="subTabs"></div>
   <div id="stage"></div>
 </main>
-<footer style="text-align:center;padding:16px;margin-top:24px;border-top:1px solid #D3DAE3;color:#586677;font-size:14px">
-   <strong>Dr. Ali A. Ahmed</strong><br>
-  Dept. of Computer Science, Faculty of Science, Minia University
+
+<footer>
+  <b>Dr. Ali A. Ahmed</b>
+  <span>Advanced Operating Systems · Minia University</span>
 </footer>
 
 <script>
@@ -445,6 +453,80 @@ l3:`
 <p>اختار الموديل، وبعدين اعمل «Block» لـ thread واحد (مثلاً بتستنى الـ disk) وشوف مين اللي هيتأثر.</p>
 <div class="w" data-w="models"></div></section>
 `};
+
+
+CONCEPTS.l4=`
+<div class="keys"><h2>أهم النقاط للحفظ</h2><ul>
+<li>العملية بتتنقل بين <b class="en">CPU burst</b> و<b class="en">I/O burst</b>. الـ I/O-bound عندها bursts قصيرة كتير، والـ CPU-bound عندها bursts طويلة قليلة.</li>
+<li>الـ <b class="en">Scheduler</b> بيختار، والـ <b class="en">Dispatcher</b> بيسلّم الـ CPU (context switch + user mode + قفز لمكان الـ PC).</li>
+<li>بنزوّد <span class="en">CPU utilization &amp; throughput</span>، وبنقلّل <span class="en">turnaround, waiting, response time</span>.</li>
+<li><b class="en">FCFS</b> فيه convoy effect، و<b class="en">SJF</b> هو الأمثل لكن فيه starvation، و<b class="en">Priority</b> بيتحل بالـ aging، و<b class="en">RR</b> مناسب للتفاعلي.</li>
+<li>كفاءة الـ RR = <span class="en">q / (q + s)</span>، والـ <b class="en">MLFQ</b> هو الأكثر تكيّفاً.</li></ul></div>
+
+<section class="concept"><h3>العملية بتعمل إيه طول الوقت؟ (CPU–I/O Burst Cycle)</h3>
+<p>الـ I/O-bound بتستخدم الـ CPU في لحظات قصيرة ثم تستنى جهاز. والـ CPU-bound بتفضل تحسب فترة طويلة. شوف الفرق بين الشكلين.</p>
+<div class="w" data-w="bursts"></div></section>
+
+<section class="concept"><h3>أساسيات الـ Scheduling</h3>
+<p>اضغط على كل عنصر علشان تشوف الفكرة.</p>
+<div class="w" data-w="picker" data-set="cpu"></div></section>
+
+<section class="concept"><h3>جرّب بنفسك: محاكي الـ Scheduling</h3>
+<p>اختار خوارزمية وعدّل الأرقام (لو خلّيت الـ BT صفر العملية مش بتشارك). ده نفس مسائل الشرائح: جرّب الأمثلة الجاهزة وقارن متوسط الـ waiting.</p>
+<div class="w" data-w="sim"></div></section>
+
+<section class="concept"><h3>توقّع الـ burst القادم (Exponential Averaging)</h3>
+<p>الـ SJF محتاج يعرف طول الـ burst الجاي، فبنتوقعه من الماضي. غيّر α وشوف التوقع بيتأثر إزاي. المثال الافتراضي هو مثال الشرائح (النتيجة 8 ثم 6 ثم 9).</p>
+<div class="w" data-w="tau"></div></section>
+
+<section class="concept"><h3>اختيار الـ Quantum في الـ Round Robin</h3>
+<p>لو الـ q صغير جداً هتضيّع وقت في الـ context switch. حرّك الـ sliders.</p>
+<div class="w" data-w="eff"></div></section>
+
+<section class="concept"><h3>الـ MLFQ خطوة بخطوة</h3>
+<p>Q0: RR (q=8)، Q1: RR (q=16)، Q2: FCFS. العملية P1 طويلة (35 ms) وP2 قصيرة (4 ms) بتوصل عند 10.</p>
+<div class="w" data-w="stepper" data-set="mlfq"></div>
+<div class="w scroll" style="margin-top:12px"><table class="tbl ltr">
+<tr><th>Algorithm</th><th>Preemptive?</th><th>Starvation?</th><th>Key feature</th></tr>
+<tr><td>FCFS</td><td>No</td><td>No</td><td>Simplest; convoy effect</td></tr>
+<tr><td>SJF / SRTF</td><td>Both</td><td>Yes (long jobs)</td><td>Optimal min average waiting time</td></tr>
+<tr><td>Priority</td><td>Both</td><td>Yes (low priority)</td><td>Flexible; solved via aging</td></tr>
+<tr><td>Round Robin</td><td>Yes (via q)</td><td>No</td><td>Best response time for interactive</td></tr>
+<tr><td>MLQ</td><td>Yes</td><td>Yes (fixed priority)</td><td>Permanent queue assignment</td></tr>
+<tr><td>MLFQ</td><td>Yes</td><td>No (with aging)</td><td>Most adaptive general scheduler</td></tr></table></div></section>
+`;
+CONCEPTS.l5=`
+<div class="keys"><h2>أهم النقاط للحفظ</h2><ul>
+<li>العملية بتشوف <b class="en">logical addresses</b>، والـ <b class="en">MMU</b> بيحوّلها لـ physical وقت التنفيذ (relocation register).</li>
+<li>الـ contiguous allocation: <span class="en">first / best / worst-fit</span> وبيعمل <b class="en">external fragmentation</b>. الـ paging بيشيله ويسيب internal صغير.</li>
+<li>الـ paging: <span class="en">Physical = frame × page size + offset</span>.</li>
+<li>حجم الـ page table = عدد الـ pages × حجم الـ entry. و<b class="en">EAT = α(t+m) + (1−α)(t+2m)</b>.</li>
+<li>الـ TLB reach = entries × page size، ولازم flush أو ASID عند الـ context switch.</li></ul></div>
+
+<section class="concept"><h3>Logical → Physical (Relocation + Limit)</h3>
+<p>الـ CPU بيولّد logical address، والـ hardware بيضيف الـ relocation register. ولو العنوان عدّى الـ limit يحصل trap. جرّب.</p>
+<div class="w" data-w="reloc"></div></section>
+
+<section class="concept"><h3>أين نحط العملية؟ (First / Best / Worst-fit)</h3>
+<p>الـ holes: 100K و500K و200K و300K و600K. الطلبات: 212K و417K و112K و426K. بدّل بين الخوارزميات وشوف مين بتفشل. تقدر تغيّر الأرقام.</p>
+<div class="w" data-w="fit"></div></section>
+
+<section class="concept"><h3>مترجم الـ Paging</h3>
+<p>الـ logical address بيتقسم لـ page number وoffset. والـ physical = frame × page size + offset. جرّب المثالين الجاهزين (الأول 14 → 46، والتاني تمرين الشريحة 3000).</p>
+<div class="w" data-w="paging"></div></section>
+
+<section class="concept"><h3>حجم الـ Page Table</h3>
+<p>غيّر حجم الـ address والـ page وحجم الـ entry. لاحظ ليه بنحتاج hierarchical paging لما الجدول يكبر.</p>
+<div class="w" data-w="pts"></div></section>
+
+<section class="concept"><h3>الـ TLB والـ EAT</h3>
+<p>الـ TLB cache صغير لترجمات الـ pages. كل ما الـ hit ratio يعلى الـ EAT يقرّب من وقت access واحد.</p>
+<div class="w" data-w="eat"></div>
+<div class="w" style="margin-top:12px" data-w="reach"></div></section>
+
+<section class="concept"><h3>مواضيع متقدمة</h3>
+<div class="w" data-w="picker" data-set="mem"></div></section>
+`;
 
 /* ===================== QUESTION BANK ===================== */
 /* non-tf: o[0] is the correct answer (options are shuffled on render). tf: use a (0=True,1=False). */
@@ -675,6 +757,193 @@ l3:[
 <li><b>ليه Many-to-One قليل؟</b> لأنه مبيستفيدش من الـ multicore وتعطيل thread واحد بيوقّف الكل.</li></ul>`}
 ]};
 
+
+Q.l4=[
+{q:'A process alternates between running on the CPU and waiting for a device. What are these two phases called?',
+ o:['CPU burst and I/O burst','Ready burst and kernel burst','Fetch burst and store burst','User burst and swap burst'],
+ e:'أي process بتتنقل بين CPU burst (بتنفذ على الـ CPU) وI/O burst (بتستنى جهاز)، وتتكرر لحد ما تخلص. وأول burst وآخر burst دايماً CPU burst.'},
+{q:'A text editor reacts to many short key presses, while a video-rendering program computes for a long time without stopping. Which statement is correct?',
+ o:['The editor is I/O-bound (many short CPU bursts); the renderer is CPU-bound (few long CPU bursts).','The editor is CPU-bound; the renderer is I/O-bound.','Both are I/O-bound.','Both are CPU-bound.'],
+ e:'الـ I/O-bound عندها bursts قصيرة كتير (برامج تفاعلية زي الـ editor)، والـ CPU-bound عندها bursts طويلة قليلة (زي الـ rendering وتدريب الـ ML). والتوزيع ده مهم لقرارات الـ scheduling.'},
+{q:'At which two decision points can a NON-preemptive scheduler pick a new process?',
+ o:['When the running process waits for I/O, or when it terminates','When a timer interrupt happens, or when a process becomes ready','When an I/O finishes, or when a timer interrupt happens','At every clock tick'],
+ e:'الـ Non-preemptive بيقرر بس لما العملية تروح Waiting (running → waiting) أو لما تخلص (terminate). أما الـ Preemptive فبيقرر في الأربع نقاط، ومنها الـ timer interrupt ولما عملية تبقى ready.'},
+{q:'Decreasing the time quantum (q) in Round Robin always decreases the average turnaround time.',tf:true,a:1,o:['True','False'],
+ e:'غلط. لو الـ q صغير جداً هتزيد الـ context switches والـ overhead، والعمليات كلها بتخلص متأخرة مع بعض. فمفيش قاعدة إن تصغير q دايماً أحسن.'},
+{q:'Which of these is NOT a job of the dispatcher?',
+ o:['Selecting the next process from the ready queue','Switching context (save old PCB, load new PCB)','Switching to user mode','Jumping to the proper location in the user program'],
+ e:'اختيار العملية هو شغل الـ CPU scheduler («المخ»). الـ dispatcher («العضلات») بيسلّم الـ CPU للعملية المختارة: context switch، تحويل لـ user mode، وقفز لمكان الـ PC.'},
+{q:'What is dispatch latency?',
+ o:['The time the dispatcher needs to stop one process and start another','The time a process waits in the ready queue','The time from submission to the first response','The total time of one CPU burst'],
+ e:'الـ dispatch latency هو الوقت اللي الـ dispatcher بياخده علشان يوقف process ويشغّل التانية. الوقت اللي في الـ ready queue اسمه waiting time.'},
+{q:'You click a button and the program shows its first reaction after 40 ms. Which scheduling metric is this?',
+ o:['Response time','Turnaround time','Throughput','CPU utilization'],
+ e:'الـ response time هو الوقت من تقديم الطلب لحد أول رد، وده المهم في الأنظمة التفاعلية. أما الـ turnaround فهو من التقديم لحد الانتهاء كله.'},
+{q:'Which group of criteria should be MAXIMIZED?',
+ o:['CPU utilization and throughput','Waiting time and response time','Turnaround time and waiting time','Response time and throughput'],
+ e:'بنزوّد الـ CPU utilization والـ throughput. وبنقلّل الـ turnaround وwaiting وresponse time.'},
+{q:'A very long job arrives first, and several tiny jobs line up behind it, waiting a long time. What is this problem called?',
+ o:['The convoy effect (in FCFS)','Aging','Thrashing','Dispatch latency'],
+ e:'ده الـ convoy effect في الـ FCFS: العمليات القصيرة بتستنى ورا عملية طويلة، فالـ average waiting time بيزيد.'},
+{q:'FCFS, order P1→P2→P3→P4, all arriving at time 0, with bursts 21, 3, 6, 2 ms. What is the average waiting time?',
+ o:['18.75 ms','4.5 ms','8 ms','32 ms'],
+ e:'الانتظار: P1=0 وP2=21 وP3=24 وP4=30، والمجموع 75، ÷ 4 = 18.75 ms.'},
+{q:'Same processes (bursts 21, 3, 6, 2), but now the order is P4→P2→P3→P1. The average waiting time drops to 4.5 ms. What does this show?',
+ o:['Running short jobs first gives a much lower average waiting time.','FCFS is always the best algorithm.','Order never changes waiting time.','Long jobs should always go first.'],
+ e:'الانتظار: P4=0 وP2=2 وP3=5 وP1=11، والمجموع 18 ÷ 4 = 4.5. نفس الفكرة اللي بيقوم عليها الـ SJF: القصير الأول يقلّل المتوسط.'},
+{q:'Which statement about Shortest-Job-First (SJF) is correct?',
+ o:['It gives the minimum average waiting time, but long processes may starve and burst times are hard to predict.','It is simple and has no starvation problem.','It is designed for interactive time-sharing systems.','It needs a time quantum.'],
+ e:'الـ SJF هو الأمثل في تقليل متوسط الـ waiting، لكن صعب نعرف الـ burst القادم، وممكن العمليات الطويلة تتجوّع (starvation).'},
+{q:'In exponential averaging, τ(n+1) = α·t(n) + (1−α)·τ(n). What happens if α = 1?',
+ o:['The prediction equals only the last actual burst, t(n)','The prediction equals only the old prediction','The prediction is always zero','The prediction doubles every time'],
+ e:'لما α = 1 يبقى τ(n+1) = t(n): بنعتمد على آخر burst بس. ولما α = 0 بنعتمد على التاريخ (التوقع القديم) بس.'},
+{q:'τ0 = 10 ms, α = 0.5, actual bursts t0 = 6, t1 = 4, t2 = 12 ms. What is the predicted τ3?',hard:true,
+ o:['9.0 ms','6.0 ms','8.0 ms','12.0 ms'],
+ e:'τ1 = 0.5×6 + 0.5×10 = 8. ثم τ2 = 0.5×4 + 0.5×8 = 6. ثم τ3 = 0.5×12 + 0.5×6 = 9.0 ms.'},
+{q:'Processes (arrival, burst): P1 (0, 8), P2 (1, 4), P3 (2, 9), P4 (3, 5). The average waiting time is 7.75 ms with non-preemptive SJF. What is it with preemptive SRTF?',hard:true,
+ o:['6.50 ms','7.75 ms','9.00 ms','5.00 ms'],
+ e:'جدول الـ SRTF: P1 (0–1)، P2 (1–5)، P4 (5–10)، P1 (10–17)، P3 (17–26). الانتظار: P1=9، P2=0، P3=15، P4=2، يعني 26 ÷ 4 = 6.5 ms، وهو أقل من 7.75.'},
+{q:'Preemptive priority scheduling (smaller number = higher priority): P1 (AT 0, BT 10, prio 3), P2 (1, 1, prio 1), P3 (2, 2, prio 4), P4 (3, 5, prio 2). Which process waits the longest?',hard:true,
+ o:['P3, 14 ms','P1, 6 ms','P4, 5 ms','P2, 1 ms'],
+ e:'الترتيب: P1 (0–1)، P2 (1–2)، P1 (2–3)، P4 (3–8)، P1 (8–16)، P3 (16–18). الـ P3 أقل أولوية فبتنتظر 14 ms (وده كمان الـ response time بتاعها). متوسط الانتظار الكلي = 5.0 ms.'},
+{q:'Low-priority processes may never run because higher-priority ones keep arriving. What is the usual solution?',
+ o:['Aging: gradually increase the priority of processes that wait a long time','Increasing the time quantum to infinity','Disabling interrupts','Using a bigger ready queue'],
+ e:'المشكلة اسمها starvation. الحل الـ aging: كل ما العملية تستنى وقت طويل نزوّد أولويتها شوية (مثلاً ننقص رقم الأولوية 1 كل فترة).'},
+{q:'In Round Robin, the context-switch time is s = 1 ms. What is the CPU efficiency q/(q+s) when q = 1 ms?',
+ o:['50%','90.9%','100%','10%'],
+ e:'الكفاءة = 1 ÷ (1 + 1) = 50%، يعني نص الوقت ضايع في الـ context switch. ولو q = 10 تبقى 10 ÷ 11 = 90.9%.'},
+{q:'Round Robin with q = 2 ms. P1 (burst 4), P2 (burst 5), P3 (burst 3), all arrive at 0. What is the total waiting time of P2?',hard:true,
+ o:['7 ms','4 ms','8 ms','5 ms'],
+ e:'التنفيذ: P1 (0–2)، P2 (2–4)، P3 (4–6)، P1 (6–8)، P2 (8–10)، P3 (10–11)، P2 (11–12). الـ P2 استنت: (0–2) + (4–8) + (10–11) = 2+4+1 = 7 ms. وP1=4 وP3=8، والمتوسط ≈ 6.33.'},
+{q:'In a Multilevel Feedback Queue, what happens to a process that uses its whole time quantum without finishing its CPU burst?',
+ o:['It is demoted to the next lower-priority queue.','It is promoted to the highest queue.','It is terminated.','It stays in the same queue forever.'],
+ e:'في الـ MLFQ العملية الجديدة تبدأ في أعلى queue (Q0). ولو استهلكت الـ quantum كله من غير ما تخلص بتتنزّل للـ queue اللي تحتها. كده الـ CPU-bound بتغرق لتحت، والـ I/O-bound القصيرة بتفضل فوق.'}
+];
+Q.l5=[
+{q:'A program is moved to another place in RAM, but the program itself never changes its addresses. What does the process actually see?',
+ o:['Logical addresses; the MMU maps them to physical addresses','Physical addresses only','Disk addresses','Register names'],
+ e:'العملية بتشوف logical addresses بس. والـ MMU هو اللي بيحوّلها لـ physical addresses وقت التنفيذ، فلو الـ program اتنقل مفيش حاجة جواه بتتغير.'},
+{q:'Why does execution-time address binding require special hardware (the MMU)?',
+ o:['Because every address generated by the process must be translated while the program is running','Because the compiler cannot run without it','Because RAM cannot store addresses','Because the disk needs it to rotate'],
+ e:'في الـ execution-time binding العنوان بيتحول مع كل access. ده محتاج hardware سريع (الـ MMU) لأن عمل الترجمة بالسوفتوير هيبقى بطيء جداً.'},
+{q:'Holes: 100K, 500K, 200K, 300K, 600K. A program requests 250K. Which hole does FIRST-FIT choose?',
+ o:['500K','300K','600K','200K'],
+ e:'الـ first-fit بياخد أول hole تكفي: 100 صغيرة، 500 تكفي، فياخدها. أما الـ best-fit فكان هيختار 300K (أصغر hole تكفي)، والـ worst-fit هيختار 600K.'},
+{q:'Best-fit is always the best choice for contiguous memory allocation.',tf:true,a:1,o:['True','False'],
+ e:'غلط. الـ best-fit ممكن يسيب فجوات صغيرة جداً (leftovers) يصعب استخدامها بعدين. والـ first-fit غالباً أسرع في البحث.'},
+{q:'Holes: 100K, 500K, 200K, 300K, 600K. Requests in order: 212K, 417K, 112K, 426K. Which statement is correct?',hard:true,
+ o:['First-fit fails to place 426K, while best-fit places all four requests.','Both algorithms place all four requests.','Best-fit fails to place 426K, while first-fit places all four.','Both algorithms fail on 212K.'],
+ e:'First-fit: 212→500 (يفضل 288)، 417→600 (183)، 112→288 (176)، و426K مفيش hole تكفيها، فبتفشل. Best-fit: 212→300، 417→500، 112→200، 426→600، وكلهم بيتحطوا.'},
+{q:'The total free memory is enough for a new process, but it is scattered in many small holes. Which problem is this?',
+ o:['External fragmentation','Internal fragmentation','Thrashing','Aging'],
+ e:'ده الـ external fragmentation: الذاكرة الحرة كافية في المجموع لكن متفرقة. بتظهر في الـ contiguous allocation. حلولها: compaction (مكلفة) أو non-contiguous allocation (زي الـ paging).'},
+{q:'Which fragmentation does paging eliminate, and which one remains?',
+ o:['It eliminates external fragmentation; a little internal fragmentation remains.','It eliminates internal fragmentation; external remains.','It eliminates both.','It eliminates neither.'],
+ e:'الـ paging بيشيل الـ external لأن الـ frames كلها بنفس الحجم. وبيفضل internal صغير في آخر page (مثلاً 4KB frame شايل 3.2KB data).'},
+{q:'Page size = 8 bytes, page table = [2, 5, 3, 4]. What physical address does logical address 14 map to?',
+ o:['46','22','14','38'],
+ e:'page = ⌊14/8⌋ = 1، offset = 14 mod 8 = 6، frame = table[1] = 5، فالـ physical = 5×8 + 6 = 46.'},
+{q:'Page size = 1 KB (1024 bytes). Logical address = 3000. Page 2 is stored in frame 7. What is the physical address?',hard:true,
+ o:['8120','7000','3000','9144'],
+ e:'page = ⌊3000/1024⌋ = 2، offset = 3000 − 2048 = 952. الـ physical = 7×1024 + 952 = 7168 + 952 = 8120.'},
+{q:'32-bit logical address, 4 KB pages, 4-byte page-table entries. How big is the page table of ONE process?',
+ o:['4 MB','4 KB','1 MB','16 MB'],
+ e:'الـ offset = 12 bit، فالـ page number = 20 bit، يعني 2^20 صفحة (حوالي مليون). الجدول = 1M × 4 byte = 4 MB لكل process.'},
+{q:'If the page-table entry size changes from 4 bytes to 8 bytes, the number of pages changes.',tf:true,a:1,o:['True','False'],
+ e:'غلط. عدد الـ pages بيتحدد من حجم الـ address والـ page size. اللي بيتضاعف هو حجم الجدول بس.'},
+{q:'32-bit logical address, 8 KB pages, 4-byte entries. What is the size of the page table?',hard:true,
+ o:['2 MB','4 MB','1 MB','8 MB'],
+ e:'8KB = 2^13 فالـ offset = 13 bit، والـ page number = 32 − 13 = 19 bit، يعني 2^19 entry. الحجم = 2^19 × 4 = 2 MB.'},
+{q:'TLB lookup t = 10 ns, memory access m = 100 ns, hit ratio α = 80%. What is the effective access time (EAT)?',
+ o:['130 ns','110 ns','210 ns','100 ns'],
+ e:'EAT = α(t+m) + (1−α)(t+2m) = 0.8×110 + 0.2×210 = 88 + 42 = 130 ns.'},
+{q:'TLB hit ratio 95%, t = 20 ns, m = 100 ns. What is the EAT?',hard:true,
+ o:['125 ns','120 ns','220 ns','115 ns'],
+ e:'EAT = 0.95×(20+100) + 0.05×(20+200) = 0.95×120 + 0.05×220 = 114 + 11 = 125 ns.'},
+{q:'In x86-64 four-level paging, what is the worst case number of memory accesses when the TLB misses?',
+ o:['5 (4 table reads + 1 data read)','4','2','1'],
+ e:'كل جدول فيه 512 entry × 8 byte = 4KB بالظبط (page واحدة). في أسوأ حالة: 4 قراءات للجداول + قراءة الـ data = 5.'},
+{q:'Why does an inverted page table make shared memory difficult?',
+ o:['It has one entry per physical frame, so a frame can map to only one (process, page) at a time.','It needs a page offset.','It stores no page numbers.','It is stored on disk.'],
+ e:'الـ inverted table حجمه بيعتمد على الـ RAM مش على عدد العمليات: entry لكل frame. فالـ frame الواحد بيشاور على (process, page) واحد بس، والمشاركة صعبة. وكمان البحث فيه أبطأ.'},
+{q:'A 128-entry TLB is used. What is the TLB reach with 4 KB pages and with 2 MB pages?',hard:true,
+ o:['512 KB and 256 MB','128 KB and 128 MB','4 KB and 2 MB','1 MB and 512 MB'],
+ e:'الـ TLB reach = عدد الـ entries × حجم الـ page: 128×4KB = 512KB، و128×2MB = 256MB. فمع الوصول العشوائي على 100MB الأنسب الـ 2MB pages لأن الـ reach بتغطي كل البيانات.'},
+{q:'Why must a TLB be flushed (or tagged with an ASID) on a context switch?',
+ o:['Different processes use the same virtual page numbers for different frames.','The TLB stores the process code.','The TLB is only valid for kernel mode.','The TLB overflows on every interrupt.'],
+ e:'عمليتين ممكن يستخدموا نفس الـ page number لكن بيشاور على frames مختلفة. فلو متمسحش الـ TLB أو منعمله tag بـ ASID (address-space ID)، العملية الجديدة ممكن تاخد ترجمة العملية القديمة بالغلط.'},
+{q:'In segmentation, a logical address is ⟨segment, offset⟩. When does the hardware trap?',
+ o:['When offset ≥ the segment limit','When the segment number is 0','When the base register is zero','When the offset is zero'],
+ e:'جدول الـ segments فيه base وlimit لكل segment. لو الـ offset أكبر من أو يساوي الـ limit يحصل trap. والـ segmentation حجمه متغيّر (external fragmentation) وظاهر للـ programmer، عكس الـ paging.'},
+{q:'48-bit logical addresses, 8 KB pages, 8-byte page-table entries, and every table must fit in one page. How many page-table levels are needed?',hard:true,
+ o:['4','2','3','5'],
+ e:'8KB = 2^13 فالـ offset = 13 bit، والـ page number = 48 − 13 = 35 bit. الجدول الواحد = 8KB ÷ 8B = 1024 entry = 10 bit لكل مستوى. 35 ÷ 10 = 3.5 فنقرّب لفوق: 4 مستويات.'}
+];
+E.l4=[
+{q:'Explain the scheduling criteria (which ones are maximized and which are minimized), the difference between preemptive and non-preemptive scheduling, and the difference between the CPU scheduler and the dispatcher.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>المعايير:</b> <span class="en">CPU utilization</span> (نبقي الـ CPU مشغول) و<span class="en">throughput</span> (عدد العمليات المنتهية في الوحدة الزمنية): <b>نزوّدهم</b>. و<span class="en">turnaround time</span> (من التقديم للانتهاء) و<span class="en">waiting time</span> (الوقت في الـ ready queue) و<span class="en">response time</span> (من التقديم لأول رد): <b>نقلّلهم</b>.</li>
+<li><b>Trade-off:</b> مينفعش نحسّن كل المعايير مع بعض. الأنظمة التفاعلية بتهتم بالـ response time، والـ batch بالـ throughput.</li>
+<li><b class="en">Non-preemptive:</b> الـ CPU يفضل مع العملية لحد ما تخلص أو تروح Waiting، بسيط وoverhead قليل (Windows 3.1, MS-DOS).</li>
+<li><b class="en">Preemptive:</b> الـ OS يقدر ياخد الـ CPU من العملية، استجابة أحسن وoverhead أكتر (Windows وLinux وmacOS الحديثة).</li>
+<li><b class="en">Scheduler:</b> «المخ» بيختار العملية من الـ ready queue. <b class="en">Dispatcher:</b> «العضلات» بيسلّمها الـ CPU: <span class="en">context switch</span>، التحويل لـ <span class="en">user mode</span>، والقفز لمكان الـ PC. والوقت ده اسمه <span class="en">dispatch latency</span>.</li></ul>`},
+{q:'Processes P1, P2, P3, P4 arrive at time 0 with bursts 21, 3, 6, 2 ms. Compute the average waiting time using FCFS in the order P1→P2→P3→P4, then in the order P4→P2→P3→P1. What is the convoy effect?',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>الترتيب الأول (P1→P2→P3→P4):</b> الانتظار: P1=0، P2=21، P3=24، P4=30. المتوسط = 75 ÷ 4 = <b>18.75 ms</b>.</li>
+<li><b>الترتيب التاني (P4→P2→P3→P1):</b> الانتظار: P4=0، P2=2، P3=5، P1=11. المتوسط = 18 ÷ 4 = <b>4.5 ms</b>.</li>
+<li><b>الـ Convoy effect:</b> عمليات قصيرة بتستنى ورا عملية طويلة، فالمتوسط بيزيد وبتبقى الاستجابة سيئة.</li>
+<li><b>الـ FCFS:</b> FIFO queue، non-preemptive، سهل وعادل، لكن مش مناسب للأنظمة التفاعلية.</li></ul>`},
+{q:'Compare non-preemptive SJF and preemptive SRTF using P1 (AT 0, BT 8), P2 (1, 4), P3 (2, 9), P4 (3, 5). Then explain exponential averaging and compute τ1, τ2 and τ3 for τ0 = 10, α = 0.5 and bursts 6, 4, 12.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b class="en">Non-preemptive SJF:</b> الترتيب P1 ثم P2 ثم P4 ثم P3. الانتظار: P1=0، P2=7، P3=15، P4=9. المتوسط = <b>7.75 ms</b>.</li>
+<li><b class="en">SRTF:</b> P1(0–1)، P2(1–5)، P4(5–10)، P1(10–17)، P3(17–26). الانتظار: P1=9، P2=0، P3=15، P4=2. المتوسط = <b>6.5 ms</b>.</li>
+<li><b>السبب:</b> الـ SJF/SRTF هو الأمثل في الـ average waiting، لكن ممكن يسبب starvation للعمليات الطويلة، ومش بنعرف الـ burst القادم فعلاً.</li>
+<li><b>Exponential averaging:</b> τ(n+1) = α·t(n) + (1−α)·τ(n). مع α = 0 بنعتمد على التاريخ، ومع α = 1 على آخر burst بس.</li>
+<li><b>الحساب:</b> τ1 = 0.5×6 + 0.5×10 = 8، τ2 = 0.5×4 + 0.5×8 = 6، τ3 = 0.5×12 + 0.5×6 = <b>9 ms</b>.</li></ul>`},
+{q:'Explain Round Robin: the effect of the quantum size and the CPU efficiency q/(q+s). Solve: q = 2 ms, P1 = 4, P2 = 5, P3 = 3 (all arrive at 0). Then compare MLQ and MLFQ and trace MLFQ for P1 (AT 0, BT 35) and P2 (AT 10, BT 4) with Q0: RR q=8, Q1: RR q=16, Q2: FCFS.',hard:true,
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>الـ RR:</b> circular FIFO، كل عملية بتاخد <span class="en">time quantum q</span>. لو q → ∞ يبقى زي FCFS. ولو q صغير جداً يبقى الـ context switch overhead كبير.</li>
+<li><b>الكفاءة:</b> q/(q+s). مثلاً q=10 وs=1: 90.9%. وq=1 وs=1: 50%.</li>
+<li><b>الحل (q=2):</b> Gantt: P1(0–2) P2(2–4) P3(4–6) P1(6–8) P2(8–10) P3(10–11) P2(11–12). الانتظار: P1=4، P2=7، P3=8. المتوسط = 19 ÷ 3 ≈ <b>6.33 ms</b>.</li>
+<li><b class="en">MLQ:</b> queues منفصلة بتعيين <b>ثابت</b> (مثلاً foreground RR وbackground FCFS). فيه خطر starvation للـ queue الأقل.</li>
+<li><b class="en">MLFQ:</b> العملية بتتنقل بين الـ queues حسب سلوكها: تبدأ في Q0، ولو استهلكت الـ quantum كله تتنزّل لـ Q1 ثم Q2.</li>
+<li><b>التتبع:</b> P1 في Q0 (0–8) ثم Q1 (8–10)، وعند 10 يوصل P2 فيأخد الـ CPU (10–14) ويخلص. بعدها P1 في Q1 (14–28) فتتنزل لـ Q2 (28–39) وتخلص عند <b>39</b>.</li></ul>`}
+];
+E.l5=[
+{q:'Explain logical vs physical addresses, address binding (compile, load and execution time), the role of the MMU and the relocation register, and dynamic loading.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>Logical address:</b> اللي بيولّده الـ CPU والعملية بتشوفه بس. <b>Physical address:</b> المكان الفعلي في الـ RAM.</li>
+<li><b>Address binding:</b> الـ source بيستخدم عناوين رمزية، والـ compiler يحوّلها لـ relocatable، والـ linker/loader يحوّلها لـ absolute. كل binding بيحوّل address space لتاني. ممكن يحصل وقت <span class="en">compile</span> أو <span class="en">load</span> أو <span class="en">execution</span>.</li>
+<li><b>Execution-time binding:</b> محتاج hardware اسمه <span class="en">MMU</span>، لأن كل عنوان لازم يتحول وقت التشغيل.</li>
+<li><b>Relocation register:</b> قيمته بتتضاف على كل عنوان بتولّده العملية (مثلاً 14000 + 346 = 14346). وكده لو اتنقل البرنامج مش لازم نعدّل عناوينه.</li>
+<li><b>Dynamic loading:</b> الروتين مبيتحمّلش في الميموري إلا لما يتنادى عليه.</li>
+<li><b>الحماية:</b> <span class="en">base &amp; limit</span> والـ CPU بيفحص كل access في user mode، وتعليمات تحميلهم privileged.</li></ul>`},
+{q:'Explain contiguous allocation (first-fit, best-fit, worst-fit) and internal vs external fragmentation. Holes: 100K, 500K, 200K, 300K, 600K. Place 212K, 417K, 112K, 426K using first-fit and best-fit. Which one fails?',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b class="en">First-fit:</b> أول hole تكفي (سريع). <b class="en">Best-fit:</b> أصغر hole تكفي (بيسيب فتات صغير). <b class="en">Worst-fit:</b> أكبر hole (بيسيب hole ممكن تتستخدم).</li>
+<li><b class="en">Internal fragmentation:</b> ضياع جوه الـ block المحجوز (مثلاً 4KB frame شايل 3.2KB). <b class="en">External:</b> الذاكرة الحرة كافية لكن متفرقة في holes صغيرة، وبتظهر في contiguous allocation.</li>
+<li><b>حلول الـ external:</b> <span class="en">compaction</span> (مكلف) أو non-contiguous allocation. والـ paging بيشيل الـ external ويسيب internal صغير.</li>
+<li><b>First-fit:</b> 212→500 (يفضل 288)، 417→600 (183)، 112→288 (176)، و426K <b>تفشل</b> لأن مفيش hole تكفيها.</li>
+<li><b>Best-fit:</b> 212→300، 417→500، 112→200، 426→600، <b>وكلهم بيتحطوا</b>.</li></ul>`},
+{q:'Explain paging address translation (page, frame, offset, page table). Solve: page size 1 KB, logical address 3000, page 2 is in frame 7. Then compute the page-table size for a 32-bit address with 4 KB pages and 4-byte entries, and explain the TLB and EAT with t = 10 ns, m = 100 ns, α = 80%.',
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b>الفكرة:</b> الـ physical memory بتتقسم لـ <span class="en">frames</span> والـ logical لـ <span class="en">pages</span> بنفس الحجم، والـ <span class="en">page table</span> بتربط رقم الـ page برقم الـ frame. العنوان = (p, d).</li>
+<li><b>القانون:</b> p = address ÷ page size، d = address mod page size، والـ physical = frame × page size + d.</li>
+<li><b>الحل:</b> p = ⌊3000/1024⌋ = 2، d = 3000 − 2048 = 952، frame = 7، فالـ physical = 7×1024 + 952 = <b>8120</b>.</li>
+<li><b>حجم الجدول:</b> offset = 12 bit، page number = 20 bit، يعني 2^20 صفحة. الحجم = 2^20 × 4B = <b>4 MB</b> لكل process (ولو الـ entry 8 bytes يتضاعف الحجم).</li>
+<li><b class="en">TLB:</b> cache صغير وسريع لترجمات الـ page→frame. بدونه كل access بيحتاج قراءتين (الجدول ثم الـ data).</li>
+<li><b>EAT:</b> α(t+m) + (1−α)(t+2m) = 0.8×110 + 0.2×210 = <b>130 ns</b>.</li></ul>`},
+{q:'Explain hierarchical, hashed and inverted page tables, and x86-64 four-level paging. Why is the TLB flushed or tagged with an ASID? Compare TLB reach for a 128-entry TLB with 4 KB and 2 MB pages. How many page-table levels does a 48-bit address need with 8 KB pages and 8-byte entries? Finally, compare paging and segmentation.',hard:true,
+ a:`<h5>الإجابة النموذجية</h5><ul>
+<li><b class="en">Hierarchical:</b> بنقسّم الـ page table نفسه لصفحات، وبنحجز بس الـ inner tables المستخدمة (4KB + 3 inner = 16KB بدل 4MB)، لكن كل مستوى بيزوّد access عند الـ TLB miss.</li>
+<li><b class="en">x86-64:</b> أربع مستويات، كل جدول 512 entry × 8B = 4KB. أسوأ حالة 4 قراءات + 1 data = 5 accesses.</li>
+<li><b class="en">Hashed:</b> الـ page number بيتعمله hash لجدول سلاسل، مناسب للـ address spaces الكبيرة المتناثرة. <b class="en">Inverted:</b> entry لكل frame فالحجم يعتمد على الـ RAM، لكن البحث أبطأ والمشاركة صعبة.</li>
+<li><b>الـ ASID / flush:</b> عمليتين ممكن يستخدموا نفس الـ virtual page لكن لـ frames مختلفة، فلازم نمسح الـ TLB أو نعمله tag بـ ASID.</li>
+<li><b>TLB reach:</b> 128×4KB = 512KB، و128×2MB = 256MB. للوصول العشوائي على 100MB الأنسب الـ 2MB pages.</li>
+<li><b>مستويات 48-bit:</b> offset = 13 bit، page number = 35 bit، الجدول الواحد 8KB ÷ 8B = 1024 entry (10 bit). 35 ÷ 10 = 3.5 → <b>4 مستويات</b>.</li>
+<li><b>Paging vs Segmentation:</b> الـ paging حجمه ثابت، internal fragmentation، مخفي عن الـ programmer. الـ segmentation حجمه متغير، external fragmentation، ظاهر للـ programmer، والعنوان ⟨segment, offset⟩ مع trap لو offset ≥ limit.</li></ul>`}
+];
+
 /* ===================== WIDGET DATA ===================== */
 const PICK={
 types:[
@@ -725,6 +994,33 @@ ctx:[
  {t:'4) Reload state from PCB1',d:'الـ OS بيحمّل حالة P1 المحفوظة من الـ PCB بتاعها.',c:[['P0','idle','idle'],['OS','loading PCB1','busy'],['P1','idle','idle']],o:true},
  {t:'5) P1 is executing',d:'دلوقتي P1 هي اللي شغالة. وفي الـ switch الجاي هيتعمل نفس الكلام بالعكس: save PCB1 ثم reload PCB0.',c:[['P0','idle','idle'],['OS','idle','idle'],['P1','executing','run']]}
 ]};
+
+PICK.cpu=[
+ {n:'Decision points',h:`<p>الـ scheduler بيقرر في 4 حالات: <b>(1)</b> Running→Waiting (I/O أو wait)، <b>(2)</b> Running→Ready (timer interrupt)، <b>(3)</b> Waiting→Ready (انتهاء I/O)، <b>(4)</b> Termination.</p><p><span class="tag a">Non-preemptive</span> بيقرر في (1) و(4) بس. <span class="tag g">Preemptive</span> بيقرر في الأربعة.</p>`},
+ {n:'Scheduler vs Dispatcher',h:`<p><b class="en">CPU Scheduler (المخ):</b> بيختار عملية من الـ ready queue.</p><p><b class="en">Dispatcher (العضلات):</b> بيسلّم الـ CPU للمختارة: <span class="en">context switch</span>، تحويل لـ <span class="en">user mode</span>، وقفز لمكان الـ PC. والوقت ده هو <span class="en">dispatch latency</span>.</p>`},
+ {n:'Criteria',h:`<p><span class="tag g">Maximize</span> CPU utilization · Throughput</p><p><span class="tag r">Minimize</span> Turnaround time (من التقديم للانتهاء) · Waiting time (في الـ ready queue) · Response time (لأول رد)</p><p>مينفعش نحسّن الكل مع بعض. التفاعلي يهتم بالـ response، والـ batch بالـ throughput.</p>`},
+ {n:'Preemptive vs Non',h:`<p><b class="en">Non-preemptive:</b> الـ CPU مع العملية لحد ما تخلص أو تروح Waiting. بسيط وoverhead قليل، لكنه ضعيف للتفاعلي (Windows 3.1, MS-DOS).</p><p><b class="en">Preemptive:</b> الـ OS يقدر ياخد الـ CPU. استجابة أحسن وoverhead أكتر (Windows وLinux وmacOS الحديثة).</p>`},
+ {n:'Priority & Aging',h:`<p>كل عملية ليها رقم أولوية (<b>الأصغر = الأعلى</b>). ممكن يبقى preemptive أو non-preemptive.</p><p><span class="tag r">Starvation</span> العمليات الأقل أولوية ممكن متشتغلش أبداً. <span class="tag g">Aging</span> بنزوّد أولوية اللي بتستنى كتير شوية بشوية.</p>`},
+ {n:'MLQ vs MLFQ',h:`<p><b class="en">MLQ:</b> queues منفصلة بتعيين <b>ثابت</b> (foreground RR وbackground FCFS).</p><p><b class="en">MLFQ:</b> العملية تتنقل بين الـ queues: تبدأ في Q0، ولو استهلكت الـ quantum كله تتنزّل. بتخلّي القصيرة فوق والطويلة تحت.</p>`}
+];
+PICK.mem=[
+ {n:'Address binding',h:`<p>العناوين بتتحول على مراحل: رمزية (source) ← relocatable (compiler) ← absolute (linker/loader). ممكن الـ binding يحصل وقت <span class="en">compile</span> أو <span class="en">load</span> أو <span class="en">execution</span>، والأخير محتاج MMU.</p><p><b class="en">Dynamic loading:</b> الروتين مبيتحمّلش إلا لما يتنادى.</p>`},
+ {n:'Fragmentation',h:`<p><b class="en">Internal:</b> ضياع جوه الـ block المحجوز (4KB frame شايل 3.2KB).</p><p><b class="en">External:</b> الذاكرة الحرة كافية لكن متفرقة في holes صغيرة (contiguous allocation).</p><p>الحل: <span class="en">compaction</span> (غالي) أو non-contiguous. والـ paging بيشيل الـ external ويسيب internal صغير.</p>`},
+ {n:'Shared pages',h:`<p>نسخة واحدة من الكود الـ read-only (reentrant) بتتشارك بين عمليات كتير (editors, compilers). أما الكود والبيانات الخاصة فلكل process نسختها.</p>`},
+ {n:'Hierarchical',h:`<p>بنقسّم الـ page table لصفحات، وبنحجز بس الـ inner tables المستخدمة. مثال: 4KB outer + 3 inner = 16KB بدل 4MB.</p><p><span class="tag r">التمن</span> access زيادة لكل مستوى وقت الـ TLB miss.</p>`},
+ {n:'x86-64',h:`<p>4 مستويات. كل جدول = 512 entry × 8 bytes = 4KB بالظبط. أسوأ حالة TLB miss: 4 قراءات جداول + 1 data = <b>5 accesses</b>. الـ 2MB huge page بتتخطى آخر مستوى.</p>`},
+ {n:'Hashed & Inverted',h:`<p><b class="en">Hashed:</b> الـ page number بيتعمله hash لجدول سلاسل، مناسب للـ 64-bit المتناثر.</p><p><b class="en">Inverted:</b> entry لكل frame، فالحجم يعتمد على الـ RAM مش على عدد العمليات. البحث أبطأ والمشاركة صعبة.</p>`},
+ {n:'TLB reach & ASID',h:`<p><b class="en">TLB reach</b> = عدد الـ entries × حجم الـ page. الـ pages الكبيرة بتزوّد الـ reach.</p><p>عند الـ context switch لازم نمسح الـ TLB أو نستخدم <b class="en">ASID</b> (tag لكل process) لأن عمليتين ممكن يستخدموا نفس الـ page number.</p>`},
+ {n:'Segmentation',h:`<p>العنوان = ⟨segment, offset⟩. جدول الـ segments فيه base وlimit، وبيحصل trap لو offset ≥ limit.</p><p><b>Paging:</b> حجم ثابت، internal fragmentation، مخفي عن الـ programmer. <b>Segmentation:</b> حجم متغير، external fragmentation، ظاهر للـ programmer.</p>`}
+];
+STEPS.mlfq=[
+ {t:'1) t = 0–8: P1 runs in Q0',d:'P1 دخلت في Q0 (أعلى أولوية، RR q=8) واشتغلت 8 ms كاملة من غير ما تخلص.',c:[['P1','running in Q0','run'],['P2','not arrived','idle']]},
+ {t:'2) t = 8: P1 is demoted to Q1',d:'استهلكت الـ quantum كله فاتنزّلت لـ Q1 (فاضل لها 27 ms). اشتغلت في Q1 من 8 لـ 10.',c:[['P1','Q0 → Q1 (27 ms left)','busy'],['P2','not arrived','idle']]},
+ {t:'3) t = 10: P2 arrives in Q0',d:'P2 (قصيرة، تفاعلية) دخلت في Q0 وأولويتها أعلى من Q1، فأخدت الـ CPU من P1 (preemption).',c:[['P1','preempted in Q1 (25 ms left)','busy'],['P2','running in Q0','run']]},
+ {t:'4) t = 10–14: P2 finishes',d:'P2 محتاجة 4 ms بس (أقل من q=8) فخلصت عند 14 من غير ما تتنزّل.',c:[['P1','waiting in Q1','idle'],['P2','finished at 14','run']]},
+ {t:'5) t = 14–28: P1 returns in Q1',d:'P1 كملت في Q1 لمدة 14 ms. مجموع وقتها في Q1 بقى 16 (= الـ quantum) فاتنزّلت لـ Q2.',c:[['P1','Q1 → Q2 (11 ms left)','busy'],['P2','done','idle']]},
+ {t:'6) t = 28–39: P1 finishes in Q2',d:'Q2 هي FCFS، فـ P1 كمّلت الـ 11 ms الباقية وخلصت عند 39.',c:[['P1','finished at 39','run'],['P2','done','idle']]}
+];
 
 const RT=[
  {t:'Airbag controller in a car',a:'hard',r:'لو الـ airbag اتأخر ثانية ممكن يبقى في إصابة خطيرة، فالـ deadline مصيري.'},
@@ -1025,11 +1321,173 @@ W.models=root=>{
  draw();
 };
 
+
+/* ===== Lecture 4 & 5 widgets ===== */
+W.bursts=root=>{
+ const seg=a=>a.map(x=>`<div class="sg-${x[1]}" style="flex-basis:${x[0]}%">${x[2]}</div>`).join('');
+ root.innerHTML=`<div class="lane"><span class="ln">I/O-bound (text editor)</span><div class="bar">${seg([[6,'work','CPU'],[18,'io','I/O'],[6,'work','CPU'],[18,'io','I/O'],[6,'work','CPU'],[18,'io','I/O'],[6,'work','CPU'],[22,'io','I/O']])}</div></div>
+ <div class="lane"><span class="ln">CPU-bound (video render)</span><div class="bar">${seg([[60,'work','CPU (long burst)'],[10,'io','I/O'],[30,'work','CPU (long burst)']])}</div></div>
+ <p class="note">الـ I/O-bound: bursts قصيرة وكتير (الـ GUI والـ editors). الـ CPU-bound: bursts طويلة وقليلة (الـ rendering وتدريب الـ ML). وأول وآخر burst في أي process هو CPU burst.</p>`;
+};
+
+function simulate(P,algo,q){
+ const n=P.length,rem=P.map(p=>p.bt),first=P.map(()=>-1),ct=P.map(()=>0),segs=[];let t=0,done=0;
+ const push=(i,a,b)=>{const l=segs[segs.length-1];if(l&&l.p===i&&l.e===a)l.e=b;else segs.push({p:i,s:a,e:b})};
+ if(algo==='rr'){
+  const queue=[],added=P.map(()=>false);
+  const addArr=T=>{P.map((p,i)=>i).filter(i=>!added[i]&&P[i].at<=T).sort((a,b)=>P[a].at-P[b].at||a-b).forEach(i=>{added[i]=true;queue.push(i)})};
+  addArr(t);
+  while(done<n){
+   if(!queue.length){t=Math.min(...P.map((p,i)=>added[i]?Infinity:p.at));addArr(t);continue}
+   const i=queue.shift();if(first[i]<0)first[i]=t;
+   const run=Math.min(q,rem[i]);push(i,t,t+run);t+=run;rem[i]-=run;addArr(t);
+   if(rem[i]>0)queue.push(i);else{ct[i]=t;done++}
+  }
+ }else{
+  let cur=-1;const nonpre=(algo==='fcfs'||algo==='sjf'||algo==='prnp');
+  const key=i=>algo==='fcfs'?[P[i].at,i]:algo==='sjf'?[P[i].bt,P[i].at,i]:algo==='srtf'?[rem[i],P[i].at,i]:[P[i].pr,P[i].at,i];
+  while(done<n){
+   const av=P.map((p,i)=>i).filter(i=>P[i].at<=t&&rem[i]>0);
+   if(!av.length){t++;continue}
+   let pick;
+   if(nonpre&&cur>=0&&rem[cur]>0)pick=cur;
+   else pick=av.sort((a,b)=>{const ka=key(a),kb=key(b);for(let k=0;k<ka.length;k++)if(ka[k]!==kb[k])return ka[k]-kb[k];return 0})[0];
+   cur=pick;if(first[pick]<0)first[pick]=t;
+   push(pick,t,t+1);rem[pick]--;t++;
+   if(rem[pick]===0){ct[pick]=t;done++;cur=-1}
+  }
+ }
+ const st=P.map((p,i)=>({ct:ct[i],tat:ct[i]-p.at,wt:ct[i]-p.at-p.bt,rt:first[i]-p.at}));
+ return{segs,st};
+}
+
+W.sim=root=>{
+ const ALG=[['fcfs','FCFS'],['sjf','SJF'],['srtf','SRTF'],['prp','Priority (preemptive)'],['prnp','Priority (non-preemptive)'],['rr','Round Robin']];
+ const PRE={A:{n:'A: FCFS (all at 0)',at:[0,0,0,0],bt:[21,3,6,2],pr:[1,2,3,4],alg:'fcfs'},B:{n:'B: SJF vs SRTF',at:[0,1,2,3],bt:[8,4,9,5],pr:[1,2,3,4],alg:'srtf'},C:{n:'C: Priority',at:[0,1,2,3],bt:[10,1,2,5],pr:[3,1,4,2],alg:'prp'},D:{n:'D: Round Robin q=2',at:[0,0,0,0],bt:[4,5,3,0],pr:[1,1,1,1],alg:'rr',q:2}};
+ let alg='fcfs';
+ root.innerHTML=`<div class="seg ltr">${ALG.map(a=>`<button data-a="${a[0]}">${a[1]}</button>`).join('')}</div>
+ <div class="chips">${Object.entries(PRE).map(([k,v])=>`<button class="chip" data-p="${k}">${v.n}</button>`).join('')}</div>
+ <div class="scroll"><table class="tbl ltr" style="max-width:520px"><tr><th>Process</th><th>AT</th><th>BT</th><th data-prh>Priority</th></tr>
+ ${[0,1,2,3].map(i=>`<tr><td><b>P${i+1}</b></td><td><input class="numin" style="width:70px" type="number" min="0" data-f="at" data-i="${i}"></td><td><input class="numin" style="width:70px" type="number" min="0" data-f="bt" data-i="${i}"></td><td data-prc><input class="numin" style="width:70px" type="number" data-f="pr" data-i="${i}"></td></tr>`).join('')}</table></div>
+ <label class="ltr" data-qw style="display:block;margin:8px 0">Time quantum q = <input class="numin" style="width:70px" type="number" min="1" value="2" data-q></label>
+ <div data-out></div>`;
+ const inp=(f,i)=>$(`[data-f="${f}"][data-i="${i}"]`,root);
+ const load=k=>{const p=PRE[k];for(let i=0;i<4;i++){inp('at',i).value=p.at[i];inp('bt',i).value=p.bt[i];inp('pr',i).value=p.pr[i]}if(p.q)$('[data-q]',root).value=p.q;alg=p.alg;draw()};
+ function draw(){
+  $$('.seg button',root).forEach(b=>b.classList.toggle('on',b.dataset.a===alg));
+  const isPr=alg==='prp'||alg==='prnp';
+  $('[data-prh]',root).style.display=isPr?'':'none';$$('[data-prc]',root).forEach(c=>c.style.display=isPr?'':'none');
+  $('[data-qw]',root).style.display=alg==='rr'?'block':'none';
+  const P=[];for(let i=0;i<4;i++){const bt=Math.floor(Number(inp('bt',i).value));if(bt>0)P.push({i,at:Math.max(0,Math.floor(Number(inp('at',i).value)||0)),bt,pr:Number(inp('pr',i).value)||0})}
+  const out=$('[data-out]',root);
+  if(!P.length){out.innerHTML='<p class="note">اكتب BT أكبر من صفر لعملية واحدة على الأقل.</p>';return}
+  const q=Math.max(1,Math.floor(Number($('[data-q]',root).value)||1));
+  const r=simulate(P,alg==='prp'?'prp':alg,q),T=Math.max(...r.segs.map(s=>s.e));
+  const avg=k=>(r.st.reduce((s,x)=>s+x[k],0)/P.length).toFixed(2);
+  out.innerHTML=`<b class="ltr" style="display:block;margin-top:6px">Gantt chart</b>
+  <div class="gantt">${r.segs.map(s=>`<div class="sg-t${P[s.p].i+1}" style="left:${s.s/T*100}%;width:${(s.e-s.s)/T*100}%" title="P${P[s.p].i+1}: ${s.s}–${s.e}">P${P[s.p].i+1}</div>`).join('')}</div>
+  <div class="ticks">${[...new Set(r.segs.flatMap(s=>[s.s,s.e]))].map(x=>`<span style="left:${x/T*100}%">${x}</span>`).join('')}</div>
+  <div class="scroll"><table class="tbl ltr"><tr><th>Process</th><th>AT</th><th>BT</th><th>CT</th><th>TAT</th><th>WT</th><th>RT</th></tr>
+  ${P.map((p,k)=>`<tr><td>P${p.i+1}</td><td>${p.at}</td><td>${p.bt}</td><td>${r.st[k].ct}</td><td>${r.st[k].tat}</td><td>${r.st[k].wt}</td><td>${r.st[k].rt}</td></tr>`).join('')}
+  <tr><td colspan="4"><b>Average</b></td><td><b>${avg('tat')}</b></td><td><b style="color:var(--teal-d)">${avg('wt')}</b></td><td><b>${avg('rt')}</b></td></tr></table></div>
+  <p class="note">TAT = CT − AT، وWT = TAT − BT، وRT = وقت أول تنفيذ − AT. متوسط الـ waiting الحالي: <b>${avg('wt')} ms</b>.</p>`;
+ }
+ $$('.seg button',root).forEach(b=>b.onclick=()=>{alg=b.dataset.a;draw()});
+ $$('[data-p]',root).forEach(b=>b.onclick=()=>load(b.dataset.p));
+ $$('input',root).forEach(i=>i.oninput=draw);
+ load('A');
+};
+
+W.tau=root=>{
+ root.innerHTML=`<div class="row ltr"><label>τ0 <input class="numin" style="width:80px" type="number" value="10" data-t0></label><label>α <input class="numin" style="width:80px" type="number" step="0.1" min="0" max="1" value="0.5" data-a></label><label>bursts t <input class="numin" style="width:150px" type="text" value="6,4,12" data-b></label></div><div class="note ltr" data-o></div>`;
+ const f=x=>String(Math.round(x*100)/100);
+ const upd=()=>{let a=Math.min(1,Math.max(0,Number($('[data-a]',root).value)));let tau=Number($('[data-t0]',root).value);
+  const ts=$('[data-b]',root).value.split(',').map(Number).filter(x=>!isNaN(x)&&x>=0).slice(0,8);
+  let h=`τ0 = ${f(tau)}<br>`;ts.forEach((t,i)=>{const nx=a*t+(1-a)*tau;h+=`τ${i+1} = ${f(a)}×${f(t)} + ${f(1-a)}×${f(tau)} = <b>${f(nx)}</b><br>`;tau=nx});
+  $('[data-o]',root).innerHTML=h};
+ $$('input',root).forEach(i=>i.oninput=upd);upd();
+};
+
+W.eff=root=>{
+ root.innerHTML=`<div class="ltr"><label>Quantum q = <b data-qv>10</b> ms</label><input type="range" min="1" max="50" value="10" data-q><label>Context switch s = <b data-sv>1</b> ms</label><input type="range" min="1" max="10" value="1" data-s></div>
+ <div class="cmp"><div><b>CPU efficiency = q/(q+s)</b><div class="big" data-e style="color:var(--teal)"></div><div class="meter"><i data-m style="background:var(--teal)"></i></div></div><div><b>Wasted on switching</b><div class="big" data-w style="color:#dc2626"></div></div></div><p class="note" data-n></p>`;
+ const upd=()=>{const q=+$('[data-q]',root).value,s=+$('[data-s]',root).value,e=q/(q+s)*100;
+  $('[data-qv]',root).textContent=q;$('[data-sv]',root).textContent=s;$('[data-e]',root).textContent=e.toFixed(1)+'%';$('[data-w]',root).textContent=(100-e).toFixed(1)+'%';$('[data-m]',root).style.width=e+'%';
+  $('[data-n]',root).textContent=e<60?'الـ quantum صغير جداً: نص الوقت تقريباً بيضيع في الـ context switch.':e>90?'كفاءة عالية، لكن لو q كبير جداً هيبقى زي الـ FCFS وتضعف الاستجابة.':'توازن معقول بين الكفاءة والاستجابة.'};
+ $$('input',root).forEach(i=>i.oninput=upd);upd();
+};
+
+W.reloc=root=>{
+ root.innerHTML=`<div class="row ltr"><label>Relocation (base) <input class="numin" style="width:110px" type="number" value="14000" data-b></label><label>Limit <input class="numin" style="width:110px" type="number" value="12000" data-l></label><label>Logical address <input class="numin" style="width:110px" type="number" value="346" data-a></label></div><p class="note" data-n></p>`;
+ const upd=()=>{const b=+$('[data-b]',root).value,l=+$('[data-l]',root).value,a=+$('[data-a]',root).value;
+  $('[data-n]',root).innerHTML=(a<0||a>=l)?`<span class="tag r">Trap</span> العنوان ${a} لازم يكون أقل من الـ limit (${l})، فالـ hardware بيعمل trap للـ OS.`:`<span class="tag g">OK</span> Physical = ${b} + ${a} = <b>${b+a}</b>`};
+ $$('input',root).forEach(i=>i.oninput=upd);upd();
+};
+
+W.fit=root=>{
+ let alg='first';
+ root.innerHTML=`<div class="seg ltr"><button data-a="first">First-fit</button><button data-a="best">Best-fit</button><button data-a="worst">Worst-fit</button></div>
+ <div class="row ltr"><label>Holes (K) <input class="numin" style="width:230px" type="text" value="100,500,200,300,600" data-h></label><label>Requests (K) <input class="numin" style="width:230px" type="text" value="212,417,112,426" data-r></label></div><div data-o></div>`;
+ const nums=s=>s.split(',').map(x=>Number(x.trim())).filter(x=>x>0).slice(0,10);
+ function draw(){
+  $$('.seg button',root).forEach(b=>b.classList.toggle('on',b.dataset.a===alg));
+  let holes=nums($('[data-h]',root).value);const reqs=nums($('[data-r]',root).value);let log='',fail=0;
+  reqs.forEach(r=>{
+   const c=holes.map((h,i)=>[h,i]).filter(x=>x[0]>=r);
+   if(!c.length){log+=`<li class="bad">${r}K: no hole is big enough (FAILED)</li>`;fail++;return}
+   const pick=alg==='first'?c[0]:alg==='best'?c.reduce((a,b)=>b[0]<a[0]?b:a):c.reduce((a,b)=>b[0]>a[0]?b:a);
+   log+=`<li class="ok">${r}K ← hole ${pick[0]}K (${pick[0]-r}K left)</li>`;holes[pick[1]]-=r;holes=holes.filter(h=>h>0);
+  });
+  $('[data-o]',root).innerHTML=`<ul class="log ltr">${log}</ul><p class="note ltr">Remaining holes: <b>${holes.length?holes.map(h=>h+'K').join(', '):'none'}</b>${fail?` · <span class="tag r">${fail} request failed</span>`:` · <span class="tag g">all placed</span>`}</p>`;
+ }
+ $$('.seg button',root).forEach(b=>b.onclick=()=>{alg=b.dataset.a;draw()});$$('input',root).forEach(i=>i.oninput=draw);draw();
+};
+
+W.paging=root=>{
+ root.innerHTML=`<div class="chips"><button class="chip" data-s="0">Example: size 8, table [2,5,3,4], addr 14</button><button class="chip" data-s="1">Exercise: 1 KB, addr 3000, page 2 → frame 7</button></div>
+ <div class="row ltr"><label>Page size (bytes) <input class="numin" style="width:110px" type="number" min="1" value="8" data-ps></label><label>Page table (frames) <input class="numin" style="width:150px" type="text" value="2,5,3,4" data-pt></label><label>Logical address <input class="numin" style="width:110px" type="number" min="0" value="14" data-a></label></div><div class="note ltr" data-o></div>`;
+ const S=[[8,'2,5,3,4',14],[1024,'1,4,7,2',3000]];
+ const upd=()=>{const ps=Math.floor(+$('[data-ps]',root).value),pt=$('[data-pt]',root).value.split(',').map(x=>Number(x.trim())),a=Math.floor(+$('[data-a]',root).value);
+  if(!(ps>0)||a<0||isNaN(a)){$('[data-o]',root).textContent='اكتب أرقام صحيحة.';return}
+  const p=Math.floor(a/ps),d=a%ps;
+  if(p>=pt.length||isNaN(pt[p])){$('[data-o]',root).innerHTML=`Page number p = ⌊${a}/${ps}⌋ = ${p}<br><span class="tag r">Invalid</span> الجدول مفيهوش page ${p}.`;return}
+  $('[data-o]',root).innerHTML=`Step 1: p = ⌊${a} / ${ps}⌋ = <b>${p}</b><br>Step 2: d = ${a} mod ${ps} = <b>${d}</b><br>Step 3: frame = table[${p}] = <b>${pt[p]}</b><br>Step 4: physical = ${pt[p]} × ${ps} + ${d} = <b style="color:var(--teal-d)">${pt[p]*ps+d}</b>`};
+ $$('[data-s]',root).forEach(b=>b.onclick=()=>{const s=S[+b.dataset.s];$('[data-ps]',root).value=s[0];$('[data-pt]',root).value=s[1];$('[data-a]',root).value=s[2];upd()});
+ $$('input',root).forEach(i=>i.oninput=upd);upd();
+};
+
+W.pts=root=>{
+ root.innerHTML=`<div class="row ltr"><label>Address bits <select class="numin" style="width:90px" data-ab><option>32</option><option>48</option><option>64</option></select></label><label>Page size <select class="numin" style="width:100px" data-pg><option value="4">4 KB</option><option value="8">8 KB</option></select></label><label>Entry size <select class="numin" style="width:100px" data-pe><option value="4">4 bytes</option><option value="8">8 bytes</option></select></label></div><div class="note ltr" data-o></div>`;
+ const fmt=b=>{const u=['B','KB','MB','GB','TB','PB'];let i=0;while(b>=1024&&i<5){b/=1024;i++}return (Math.round(b*100)/100)+' '+u[i]};
+ const upd=()=>{const ab=+$('[data-ab]',root).value,pg=+$('[data-pg]',root).value*1024,pe=+$('[data-pe]',root).value;
+  const off=Math.log2(pg),pn=ab-off,pages=Math.pow(2,pn),size=pages*pe,per=pg/pe,lv=Math.ceil(pn/Math.log2(per));
+  $('[data-o]',root).innerHTML=`Offset = ${off} bits · Page number = ${pn} bits<br>Number of pages = 2^${pn}<br>Page table size = 2^${pn} × ${pe} B = <b style="color:var(--teal-d)">${fmt(size)}</b> per process<br>Entries per table (one page) = ${per} = 2^${Math.log2(per)} → hierarchical levels ≈ <b>${lv}</b>`};
+ $$('select',root).forEach(i=>i.onchange=upd);upd();
+};
+
+W.eat=root=>{
+ root.innerHTML=`<div class="ltr"><label>TLB lookup t = <b data-tv>10</b> ns</label><input type="range" min="1" max="50" value="10" data-t><label>Memory access m = <b data-mv>100</b> ns</label><input type="range" min="50" max="200" step="10" value="100" data-m><label>Hit ratio α = <b data-av>80</b>%</label><input type="range" min="50" max="100" value="80" data-a></div>
+ <div class="cmp"><div><b>EAT</b><div class="big" data-e style="color:var(--teal)"></div></div><div><b>Without TLB (2m)</b><div class="big" data-n style="color:#dc2626"></div></div></div><p class="note ltr" data-f></p>`;
+ const upd=()=>{const t=+$('[data-t]',root).value,m=+$('[data-m]',root).value,a=+$('[data-a]',root).value/100,e=a*(t+m)+(1-a)*(t+2*m);
+  $('[data-tv]',root).textContent=t;$('[data-mv]',root).textContent=m;$('[data-av]',root).textContent=Math.round(a*100);$('[data-e]',root).textContent=(Math.round(e*100)/100)+' ns';$('[data-n]',root).textContent=2*m+' ns';
+  $('[data-f]',root).textContent=`EAT = ${a}×(${t}+${m}) + ${Math.round((1-a)*100)/100}×(${t}+${2*m}) = ${Math.round(e*100)/100} ns`};
+ $$('input',root).forEach(i=>i.oninput=upd);upd();
+};
+
+W.reach=root=>{
+ root.innerHTML=`<div class="row ltr"><label>TLB entries <input class="numin" style="width:100px" type="number" min="1" value="128" data-n></label><label>Page size <select class="numin" style="width:110px" data-p><option value="4096">4 KB</option><option value="2097152">2 MB</option></select></label></div><p class="note ltr" data-o></p>`;
+ const upd=()=>{const n=+$('[data-n]',root).value,p=+$('[data-p]',root).value,r=n*p,u=r>=1048576?(r/1048576)+' MB':(r/1024)+' KB';
+  $('[data-o]',root).innerHTML=`TLB reach = ${n} × ${p===4096?'4 KB':'2 MB'} = <b>${u}</b>. ${r>=100*1048576?'<span class="tag g">يغطي 100 MB من الوصول العشوائي</span>':'<span class="tag r">أقل من 100 MB</span>'}`};
+ $$('input,select',root).forEach(i=>i.oninput=upd);upd();
+};
+
 /* ===================== APP ===================== */
 const LEC=[
- {id:'l0',n:'المحاضرة 1',s:'Intro, System Types & Interrupts'},
+ {id:'l0',n:'المحاضرة 0',s:'Intro, System Types & Interrupts'},
  {id:'l2',n:'المحاضرة 2',s:'I/O, Storage, OS Structure & Protection'},
- {id:'l3',n:'المحاضرة 3',s:'Processes & Threads'}];
+ {id:'l3',n:'المحاضرة 3',s:'Processes & Threads'},
+ {id:'l4',n:'المحاضرة 4',s:'CPU Scheduling'},
+ {id:'l5',n:'المحاضرة 5',s:'Memory Management'}];
 const TABS=[['c','شرح المفاهيم'],['q','الكويز'],['e','أسئلة مقالية']];
 let curL='l0',curT='c';
 
